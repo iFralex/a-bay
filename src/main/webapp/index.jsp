@@ -1,51 +1,58 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <title>Hello World JSP</title>
     <style>
-        .login-container {
-            width: 300px;
-            margin: 100px auto;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
             padding: 20px;
-            border: 1px solid #ccc;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
             border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .form-group {
-            margin-bottom: 15px;
+        h1 {
+            color: #2c3e50;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
+        ul {
+            list-style-type: circle;
         }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .technology {
+            padding: 5px;
+            margin: 5px 0;
+            background-color: #e8f4f8;
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
-<div class="login-container">
-    <h2>Login Form</h2>
-    <form action="${pageContext.request.contextPath}/login" method="post">
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit">Login</button>
-    </form>
-</div>
+    <div class="container">
+        <h1>Hello World con JSP y JSTL</h1>
+        
+        <p>Este es un mensaje desde JSP: <strong>¡Hola Mundo!</strong></p>
+        
+        <c:if test="${not empty message}">
+            <p>Y este es el mensaje desde el servlet: <strong>${message}</strong></p>
+        </c:if>
+        
+        <h2>Tecnologías utilizadas:</h2>
+        <ul>
+            <c:forEach var="tech" items="${technologies}">
+                <li class="technology">${tech}</li>
+            </c:forEach>
+        </ul>
+        
+        <p>La hora actual es: <c:out value="<%= new java.util.Date() %>" /></p>
+    </div>
 </body>
 </html>
