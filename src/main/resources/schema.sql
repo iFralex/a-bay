@@ -13,7 +13,9 @@ CREATE TABLE IF NOT EXISTS asta (
     descrizione TEXT,
     immagine TEXT,
     scadenza TEXT NOT NULL,
-    venditore TEXT NOT NULL
+    rialzo_minimo INTEGER NOT NULL,
+    venditore TEXT NOT NULL,
+    chiusa BOOLEAN NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS asta_articoli (
@@ -32,4 +34,12 @@ CREATE TABLE offerta (
     data_offerta TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_asta) REFERENCES asta(id),
     FOREIGN KEY (username) REFERENCES utente(username)
+);
+
+CREATE TABLE utente (
+    username TEXT PRIMARY KEY,
+    password TEXT NOT NULL,
+    nome TEXT NOT NULL,
+    cognome TEXT NOT NULL,
+    indirizzo TEXT NOT NULL
 );

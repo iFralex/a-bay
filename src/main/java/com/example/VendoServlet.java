@@ -2,7 +2,6 @@ package com.example;
 
 import model.*;
 import utils.DbManager;
-import utils.TimeUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,9 +24,11 @@ public class VendoServlet extends HttpServlet {
             return;
         }
 
-        DbManager.inizializzaDatabase();
-
         List<Articolo> articoliUtente = DbManager.getArticoliDisponibiliPerUtente(utente.getUsername());
+        for (Articolo art : articoliUtente) {
+            System.out.println(art.getNome());
+        }
+
         List<Asta> asteAperte = DbManager.getAsteUtente(utente.getUsername(), false); // non chiuse
         List<Asta> asteChiuse = DbManager.getAsteUtente(utente.getUsername(), true); // chiuse
 

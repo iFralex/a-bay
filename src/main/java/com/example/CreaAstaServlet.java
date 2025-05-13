@@ -41,7 +41,6 @@ public class CreaAstaServlet extends HttpServlet {
         }
 
         Asta asta = new Asta();
-        asta.setVenditore(utente.getUsername());
         asta.setIdArticoli(idArticoli);
         asta.newOfferta(utente.getUsername(), prezzoIniziale);
         asta.setRialzoMinimo(rialzoMinimo);
