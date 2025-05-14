@@ -27,6 +27,7 @@ public class DbManager {
     public static Connection getConnection() throws SQLException {
         try {
             Class.forName("org.sqlite.JDBC");
+
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -301,6 +302,16 @@ public class DbManager {
         Utente user = null;
         String sql = "SELECT * FROM utente WHERE username = ?";
 
+        try (Connection con = getConnection()) {
+            if (con != null && !con.isClosed()) {
+                System.out.println("Database connection successful!");
+            } else {
+                System.out.println("Failed to connect to the database.");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
@@ -389,5 +400,24 @@ public class DbManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String getIndirizzoSpedizione(String username) {
+        String indirizzo = null;
+        String query = "SELECT indirizzo FROM utente WHERE username = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                indirizzo = rs.getString("indirizzo");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return indirizzo;
     }
 }

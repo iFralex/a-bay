@@ -27,6 +27,12 @@ public class DettaglioAstaServlet extends HttpServlet {
         // Calcola se l'asta è scaduta
         boolean chiusa = asta.isChiusa();
 
+        // Se l'asta è chiusa, recupera l'indirizzo di spedizione
+        if (chiusa && asta.getOffertaVincitrice() != null) {
+            String indirizzo = DbManager.getIndirizzoSpedizione(asta.getOffertaVincitrice().getUsername());
+            request.setAttribute("indirizzoSpedizione", indirizzo);
+        }
+
         // Inoltra i dati alla JSP
         request.setAttribute("asta", asta);
         request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request, response);

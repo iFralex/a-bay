@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS asta_articoli (
     FOREIGN KEY (id_articolo) REFERENCES articolo(id)
 );
 
-CREATE TABLE offerta (
+CREATE TABLE IF NOT EXISTS offerta (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     id_asta INTEGER NOT NULL,
     username TEXT NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE offerta (
     FOREIGN KEY (username) REFERENCES utente(username)
 );
 
-CREATE TABLE utente (
+CREATE TABLE IF NOT EXISTS utente (
     username TEXT PRIMARY KEY,
     pass_hash TEXT NOT NULL,
     nome TEXT NOT NULL,

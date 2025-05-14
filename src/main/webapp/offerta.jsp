@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <head><title>Dettaglio Asta</title></head>
 <body>
     <h2>Asta #${asta.id}: ${asta.nome}</h2>
@@ -26,7 +27,7 @@
     <form method="post" action="offerta">
         <input type="hidden" name="astaId" value="${asta.id}" />
         <label for="prezzo">Prezzo (€) (Rialzo: ${asta.rialzoMinimo}):</label>
-        <input type="number" step="1" name="prezzo" required />
+        <input type="number" step="1" name="prezzo" id="prezzo" required />
         <button type="submit">Invia Offerta</button>
     </form>
 </body>

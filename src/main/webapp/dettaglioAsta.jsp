@@ -30,7 +30,7 @@
 <c:if test="${asta.isChiusa()}">
     <p><strong>Vincitore:</strong> ${asta.getOffertaVincitrice().getUsername()}</p>
     <p><strong>Prezzo finale:</strong> ${asta.getOffertaVincitrice().getPrezzo()} €</p>
-    <p><strong>Indirizzo spedizione:</strong> TODO</p>
+    <p><strong>Indirizzo spedizione:</strong> ${indirizzoSpedizione != null ? indirizzoSpedizione : 'Non disponibile'}</p>
 </c:if>
 
 <h2>Offerte</h2>
