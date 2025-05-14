@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import utils.TimeUtils;
+
 public class Asta {
     public static class Offerta {
         private String username;
@@ -49,6 +51,7 @@ public class Asta {
     private List<Integer> idArticoli; // usato in input
     private int rialzoMinimo;
     private LocalDateTime scadenza;
+    private String tempoRimasto;
     private boolean chiusa;
     private Offerta offertaMassima;
     private String nome;
@@ -97,8 +100,13 @@ public class Asta {
         return scadenza;
     }
 
+    public String getTempoRimasto() {
+        return tempoRimasto;
+    }
+
     public void setScadenza(LocalDateTime scadenza) {
         this.scadenza = scadenza;
+        tempoRimasto = TimeUtils.getTempoMancante(scadenza);
     }
 
     public boolean isChiusa() {

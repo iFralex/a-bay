@@ -2,13 +2,13 @@ package utils;
 
 import model.Articolo;
 import model.Asta;
+import model.Asta.Offerta;
 import model.Utente;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.io.InputStream;
-import java.util.Properties;
 
 public class DbManager {
     private static final String DB_URL;
@@ -29,7 +29,6 @@ public class DbManager {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            // Gestisci l'errore, ad esempio, lanciando un'altra eccezione o facendo il log
         }
         return DriverManager.getConnection(DB_URL);
     }
@@ -97,7 +96,7 @@ public class DbManager {
     }
 
     public static void inserisciAsta(Asta a) {
-        String sql = "INSERT INTO asta (nome, descrizione, immagine, scadenza, rialzo_minimo, venditore, chiusa) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO asta (nome, descrizione, immagine, scadenza, rialzo_minimo, venditore) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection con = getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -107,7 +106,6 @@ public class DbManager {
             ps.setString(4, a.getScadenza().toString()); // SQLite salva DATETIME come TEXT
             ps.setInt(5, a.getRialzoMinimo());
             ps.setString(6, a.getVenditore());
-            ps.setBoolean(7, false);
             ps.executeUpdate();
 
             // Recupera l'ID generato con last_insert_rowid()
@@ -163,11 +161,12 @@ public class DbManager {
 
     public static List<Asta> getAsteUtente(String username, boolean chiuse) {
         List<Asta> aste = new ArrayList<>();
-        String sql = "SELECT * FROM asta WHERE venditore = ? AND chiusa = ?";
+
+        String sql = "SELECT * FROM asta WHERE venditore = ? AND (aggiudicatario IS "
+                + (chiuse ? "NOT NULL" : "NULL") + ")";
 
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, username);
-            ps.setBoolean(2, chiuse);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -206,7 +205,8 @@ public class DbManager {
                 a.setDescrizione(rs.getString("descrizione"));
                 a.setImmagine(rs.getString("immagine"));
                 a.setScadenza(LocalDateTime.parse(rs.getString("scadenza")));
-                a.setChiusa(rs.getBoolean("chiusa"));
+                a.setChiusa(rs.getString("aggiudicatario") != null);
+
                 a.setRialzoMinimo(rs.getInt("rialzo_minimo"));
 
                 // Recupera le offerte associate all'asta
@@ -220,6 +220,74 @@ public class DbManager {
         }
 
         return a;
+    }
+
+    public static List<Asta> getAstePerParolaChiave(String parolaChiave, LocalDateTime now) {
+        List<Asta> aste = new ArrayList<>();
+        String sql = "SELECT * FROM asta " +
+                "WHERE (nome LIKE ? OR descrizione LIKE ?) " +
+                "AND aggiudicatario IS NULL " + // Seleziona le aste senza aggiudicatario (aperte)
+                "AND scadenza > ?"; // Aste con scadenza futura
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + parolaChiave + "%"); // Ricerca nel nome
+            ps.setString(2, "%" + parolaChiave + "%"); // Ricerca nella descrizione
+            ps.setObject(3, now); // La data e ora attuali per confrontare la scadenza
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Asta a = new Asta();
+                a.setId(rs.getInt("id"));
+                a.setNome(rs.getString("nome"));
+                a.setDescrizione(rs.getString("descrizione"));
+                a.setImmagine(rs.getString("immagine"));
+                a.setScadenza(LocalDateTime.parse(rs.getString("scadenza")));
+                a.setRialzoMinimo(rs.getInt("rialzo_minimo"));
+                a.setChiusa(rs.getString("aggiudicatario") != null);
+
+                // Recupera gli articoli e le offerte per l'asta
+                a.setArticoli(getArticoliAsta(a.getId()));
+                a.setOfferte(getOffertePerAsta(a.getId()));
+
+                aste.add(a);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return aste;
+    }
+
+    public static List<Asta> getAsteVinteDaUtente(String username) {
+        List<Asta> aste = new ArrayList<>();
+        String sql = "SELECT * FROM asta WHERE aggiudicatario = ? AND aggiudicatario IS NOT NULL";
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, username); // Imposta il parametro username nella query
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Asta a = new Asta();
+                a.setId(rs.getInt("id"));
+                a.setNome(rs.getString("nome"));
+                a.setDescrizione(rs.getString("descrizione"));
+                a.setImmagine(rs.getString("immagine"));
+                a.setScadenza(LocalDateTime.parse(rs.getString("scadenza")));
+                a.setRialzoMinimo(rs.getInt("rialzo_minimo"));
+                a.setChiusa(true); // L'asta è chiusa (vinta)
+                a.setArticoli(getArticoliAsta(a.getId())); // Ottieni gli articoli per l'asta
+
+                List<Offerta> offerte = getOffertePerAsta(a.getId());
+                a.setOfferte(Arrays.asList(offerte.get(0), offerte.get(offerte.size() - 1))); // Imposta prima e ultima
+
+                aste.add(a);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return aste;
     }
 
     public static Utente getUtente(String username) {
@@ -237,7 +305,7 @@ public class DbManager {
                 user.setNome(rs.getString("nome"));
                 user.setCognome(rs.getString("cognome"));
                 user.setIndirizzo(rs.getString("indirizzo"));
-                
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -304,11 +372,12 @@ public class DbManager {
         }
     }
 
-    public static void chiudiAsta(int astaId) {
-        String sql = "UPDATE asta SET chiusa = true WHERE id = ?";
+    public static void chiudiAsta(int astaId, String aggiudicatario) {
+        String sql = "UPDATE asta SET aggiudicatario = ? WHERE id = ?";
 
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, astaId);
+            ps.setString(2, aggiudicatario);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

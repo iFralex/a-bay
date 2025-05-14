@@ -36,7 +36,8 @@ public class DettaglioAstaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int astaId = Integer.parseInt(request.getParameter("id"));
-        DbManager.chiudiAsta(astaId);
+        String aggiudicatario = request.getParameter("aggiudicatario");
+        DbManager.chiudiAsta(astaId, aggiudicatario);
         response.sendRedirect("dettaglioAsta?id=" + astaId);
     }
 }

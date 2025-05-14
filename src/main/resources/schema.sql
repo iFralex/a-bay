@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS asta (
     scadenza TEXT NOT NULL,
     rialzo_minimo INTEGER NOT NULL,
     venditore TEXT NOT NULL,
-    chiusa BOOLEAN NOT NULL
+    aggiudicatario VARCHAR(255),
+    FOREIGN KEY (venditore) REFERENCES utente(username),
+    FOREIGN KEY (aggiudicatario) REFERENCES utente(username) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS asta_articoli (
