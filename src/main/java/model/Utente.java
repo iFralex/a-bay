@@ -2,7 +2,8 @@ package model;
 
 public class Utente {
     private String username;
-    private String password;
+    private String passwordHash;
+
     private String nome;
     private String cognome;
     private String indirizzo;
@@ -16,12 +17,12 @@ public class Utente {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String hash) {
+        this.passwordHash = hash;
     }
 
     public String getNome() {

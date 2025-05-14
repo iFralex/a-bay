@@ -1,6 +1,7 @@
 package com.example;
 
 import java.io.IOException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -8,7 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import model.Utente;
 import utils.DbManager;
+import utils.PasswordUtils;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -24,19 +27,21 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Simulazione di autenticazione (in produzione usare autenticazione reale)
-        if ("admin".equals(username) && "password".equals(password)) {
-            // Autenticazione riuscita
-            HttpSession session = request.getSession();
-            session.setAttribute("user", DbManager.getUtente(username));
-            session.setAttribute("isLoggedIn", true);
+        Utente utente = DbManager.getUtente(username);
+                
+        if (utente != null) {
+            boolean isPasswordValid = PasswordUtils.verifyPassword(password, utente.getPasswordHash());
 
-            // Reindirizzamento alla pagina di benvenuto
-            response.sendRedirect(request.getContextPath() + "/home");
-        } else {
-            // Autenticazione fallita
-            request.setAttribute("errorMessage", "Credenziali non valide!");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            if (isPasswordValid) {
+                HttpSession session = request.getSession();
+                session.setAttribute("user", utente);
+                session.setAttribute("isLoggedIn", true);
+                response.sendRedirect(request.getContextPath() + "/home");
+                return;
+            }
         }
+
+        request.setAttribute("errorMessage", "Credenziali non valide!");
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 }

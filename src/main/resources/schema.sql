@@ -38,7 +38,7 @@ CREATE TABLE offerta (
 
 CREATE TABLE utente (
     username TEXT PRIMARY KEY,
-    password TEXT NOT NULL,
+    pass_hash TEXT NOT NULL,
     nome TEXT NOT NULL,
     cognome TEXT NOT NULL,
     indirizzo TEXT NOT NULL

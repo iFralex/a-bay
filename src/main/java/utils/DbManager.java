@@ -4,9 +4,6 @@ import model.Articolo;
 import model.Asta;
 import model.Utente;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -53,11 +50,11 @@ public class DbManager {
             }
 
             // Inserimento utente "Alessio"
-            String insertUserSql = "INSERT OR IGNORE INTO utente (username, password, nome, cognome, indirizzo) VALUES (?, ?, ?, ?, ?)";
+            String insertUserSql = "INSERT OR IGNORE INTO utente (username, pass_hash, nome, cognome, indirizzo) VALUES (?, ?, ?, ?, ?)";
 
             try (PreparedStatement ps = con.prepareStatement(insertUserSql)) {
                 ps.setString(1, "admin"); // username
-                ps.setString(2, "admin123"); // password (usa hash se vuoi sicurezza)
+                ps.setString(2, "$2a$12$dyQptPkpjK5a1R5prGq1uulyUYdhF2rBoQODWPHlNWLMUvdbqsg02"); // password: "admin"
                 ps.setString(3, "Alessio");
                 ps.setString(4, "Antonucci");
                 ps.setString(5, "Via ciao, Mi");
@@ -236,10 +233,11 @@ public class DbManager {
             if (rs.next()) {
                 user = new Utente();
                 user.setUsername(rs.getString("username"));
+                user.setPasswordHash(rs.getString("pass_hash"));
                 user.setNome(rs.getString("nome"));
                 user.setCognome(rs.getString("cognome"));
                 user.setIndirizzo(rs.getString("indirizzo"));
-                // Nota: non serve restituire la password
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();
