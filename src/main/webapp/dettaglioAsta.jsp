@@ -52,7 +52,7 @@
 <c:if test="${!asta.isChiusa()}">
     <form action="dettaglioAsta" method="post">
         <input type="hidden" name="id" value="${asta.getId()}" />
-        <input type="hidden" name="aggiudicatario" value="${asta.getOffertaMassima().getUsername()}" />
+        <input type="hidden" name="aggiudicatario" value="${asta.offertaMassima.username}" />
         <input type="submit" value="Chiudi Asta" />
     </form>
 </c:if>

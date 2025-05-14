@@ -16,7 +16,7 @@
         <ul>
             <c:forEach var="asta" items="${asteAperte}">
                 <li>
-                    <a href="offerta?idAsta=${asta.getId()}">
+                    <a href="offerta?id=${asta.getId()}">
                         Asta #${asta.id}: ${asta.nome} - Scade tra ${asta.tempoRimasto}
                         <br/>Articoli: <c:forEach var="articolo" items="${asta.getArticoli()}">${articolo.getNome()}, </c:forEach>
                     </a>

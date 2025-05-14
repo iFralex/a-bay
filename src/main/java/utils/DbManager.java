@@ -58,6 +58,13 @@ public class DbManager {
                 ps.setString(4, "Antonucci");
                 ps.setString(5, "Via ciao, Mi");
                 ps.executeUpdate();
+
+                ps.setString(1, "user2"); // username
+                ps.setString(2, "$2a$12$dyQptPkpjK5a1R5prGq1uulyUYdhF2rBoQODWPHlNWLMUvdbqsg02"); // password: "admin"
+                ps.setString(3, "Ale2");
+                ps.setString(4, "Anto2");
+                ps.setString(5, "Via ciao 2, Mi");
+                ps.executeUpdate();
             }
 
             System.out.println("Database inizializzato e utente inserito.");
@@ -376,8 +383,8 @@ public class DbManager {
         String sql = "UPDATE asta SET aggiudicatario = ? WHERE id = ?";
 
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, astaId);
-            ps.setString(2, aggiudicatario);
+            ps.setString(1, aggiudicatario);
+            ps.setInt(2, astaId);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
