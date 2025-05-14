@@ -47,6 +47,7 @@ public class Asta {
     }
 
     private int id;
+    private String usernameVenditore;
     private List<Articolo> articoli;
     private List<Integer> idArticoli; // usato in input
     private int rialzoMinimo;
@@ -68,9 +69,9 @@ public class Asta {
         this.id = id;
     }
 
-    public String getVenditore() {
-        return offerte.get(0).username;
-    }
+    public String getVenditore() {return this.usernameVenditore;}
+
+    public void setVenditore(String usernameVenditore) {this.usernameVenditore = usernameVenditore;}
 
     public List<Articolo> getArticoli() {
         return articoli;

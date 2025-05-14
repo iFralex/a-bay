@@ -214,7 +214,7 @@ public class DbManager {
                 a.setImmagine(rs.getString("immagine"));
                 a.setScadenza(LocalDateTime.parse(rs.getString("scadenza")));
                 a.setChiusa(rs.getString("aggiudicatario") != null);
-
+                a.setVenditore(rs.getString("venditore"));
                 a.setRialzoMinimo(rs.getInt("rialzo_minimo"));
 
                 // Recupera le offerte associate all'asta

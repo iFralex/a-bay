@@ -1,14 +1,18 @@
 package model;
 
 public class Utente {
+    private int id;
     private String username;
     private String passwordHash;
-
     private String nome;
     private String cognome;
     private String indirizzo;
 
     // Getters e Setters
+    public int getId() {return id;}
+
+    public void setId(int id) {this.id = id;}
+
     public String getUsername() {
         return username;
     }

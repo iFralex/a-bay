@@ -16,7 +16,7 @@
         <li>${articolo.getNome()} - ${articolo.getPrezzo()} €</li>
     </c:forEach>
 </ul>
-
+<p><strong>Venditore:</strong> ${asta.getVenditore()}</p>
 <p><strong>Prezzo iniziale:</strong> ${asta.getPrezzoIniziale()} €</p>
 <p><strong>Offerta Massima:</strong> ${asta.getOffertaMassima().getUsername()} | ${asta.getOffertaMassima().getPrezzo()} €</p>
 <p><strong>Rialzo minimo:</strong> ${asta.getRialzoMinimo()} €</p>

@@ -25,6 +25,11 @@ public class CreaAstaServlet extends HttpServlet {
         }
 
         String[] articoliIds = request.getParameterValues("articoliId");
+        if (articoliIds == null || articoliIds.length == 0) {
+            request.setAttribute("errorMessage", "Seleziona almeno un articolo per l'asta.");
+            request.getRequestDispatcher("/vendo").forward(request, response);
+            return;
+        }
         int rialzoMinimo = Integer.parseInt(request.getParameter("rialzo"));
         String scadenzaString = request.getParameter("scadenza");
         String nomeString = request.getParameter("nome");

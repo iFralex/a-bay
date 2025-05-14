@@ -38,4 +38,13 @@ public class VendoServlet extends HttpServlet {
 
         request.getRequestDispatcher("/vendo.jsp").forward(request, response);
     }
+
+
+    //succede se CreaAstaServlet vede che l'asta e' vuota
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Non gestiamo POST in questo servlet
+        this.doGet(request, response);
+    }
 }

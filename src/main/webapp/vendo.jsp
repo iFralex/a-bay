@@ -26,13 +26,13 @@
 <% for (Asta a : asteAperte) { %>
     <li>
         <a href="dettaglioAsta?id=<%= a.getId() %>">
-            Asta <%= a.getNome() %> – 
+            <%= a.getNome() %> –
             <%= a.getDescrizione() %> – 
-            Articoli: 
+            Articoli: [
             <% for (Articolo art : a.getArticoli()) { %>
                 <%= art.getNome() %> 
             <% } %>
-            – Offerta Max: €<%= a.getOffertaMassima().getPrezzo() %> – 
+            ] – Offerta Max: €<%= a.getOffertaMassima().getPrezzo() %> –
             Scade tra: <%= TimeUtils.getTempoMancante(a.getScadenza()) %>
         </a>
     </li>
@@ -43,11 +43,14 @@
 <ul>
 <% for (Asta a : asteChiuse) { %>
     <li>
-        Asta <%= a.getId() %> – 
-        Articoli: 
-        <% for (Articolo art : a.getArticoli()) { %>
-            <%= art.getNome() %> 
-        <% } %>
+        <a href="dettaglioAsta?id=<%= a.getId() %>">
+            <%= a.getNome() %> –
+            Articoli: [
+            <% for (Articolo art : a.getArticoli()) { %>
+                <%= art.getNome() %>
+            <% } %>
+            ]
+        </a>
     </li>
 <% } %>
 </ul>
@@ -71,6 +74,11 @@
     <% for (Articolo art : articoliUtente) { %>
         <input type="checkbox" name="articoliId" value="<%= art.getId() %>">
         <%= art.getNome() %> (€<%= art.getPrezzo() %>)<br>
+    <% } %>
+    <% if (request.getAttribute("errorMessage") != null) { %>
+    <div style="color: red; margin: 10px 0;">
+        <%= request.getAttribute("errorMessage") %>
+    </div>
     <% } %>
     Nome: <input type="text" name="nome" required><br>
     Descrizione: <input type="text" name="descrizione" required><br>
