@@ -1,0 +1,1 @@
+db.path=/absolute/path/to/db/ (Duplicate this file, remove .example and insert your absolute path, and remove this comment)
