@@ -4,15 +4,36 @@ import model.Articolo;
 import model.Asta;
 import model.Utente;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class DbManager {
+    private static final String DB_URL;
 
-    private static final String DB_URL = "jdbc:sqlite:aste.db"; // crea il file se non esiste
+    static {
+        Properties props = new Properties();
+        try (InputStream input = DbManager.class.getClassLoader().getResourceAsStream("config.properties")) {
+            props.load(input);
+            String path = props.getProperty("db.path");
+            DB_URL = "jdbc:sqlite:" + path;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load config.properties", e);
+        }
+    }
 
     public static Connection getConnection() throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            // Gestisci l'errore, ad esempio, lanciando un'altra eccezione o facendo il log
+        }
         return DriverManager.getConnection(DB_URL);
     }
 
