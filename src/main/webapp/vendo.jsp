@@ -41,7 +41,7 @@
                     – Offerta Max: €${a.offertaMassima.prezzo}
                 </c:if>
  –
-                Scade tra: ${TimeUtils.getTempoMancante(a.formattedScadenza)}
+                Scade tra: ${TimeUtils.getTempoMancante(a.scadenza)}
             </a>
         </li>
     </c:forEach>

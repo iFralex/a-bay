@@ -53,5 +53,5 @@ CREATE TABLE IF NOT EXISTS utente (
     CHECK(length(pass_hash) >= 10),
     CHECK(length(nome) >= 2),
     CHECK(length(cognome) >= 2),
-    CHECK(length(indirizzo) >= 6),
+    CHECK(length(indirizzo) >= 6)
 );

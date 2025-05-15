@@ -73,7 +73,8 @@ public class OffertaServlet extends HttpServlet {
 
         List<String> errors = new ArrayList<>();
         request.setAttribute("asta", asta);
-        int prezzoMinimo = (max != null ? max.getPrezzo() : asta.getPrezzoIniziale()) + asta.getRialzoMinimo();
+        //int prezzoMinimo = (max != null ? max.getPrezzo() : asta.getPrezzoIniziale()) + asta.getRialzoMinimo();
+        int prezzoMinimo = max != null ? max.getPrezzo() + asta.getRialzoMinimo() : asta.getPrezzoIniziale();
         if (prezzoOfferto >= prezzoMinimo) {
             try {
                 Offerta offerta = new Offerta(username, prezzoOfferto);
