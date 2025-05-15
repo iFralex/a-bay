@@ -228,7 +228,7 @@ public class Asta {
     public void setOfferte(List<Offerta> offerte) {
         for (int i = 1; i < offerte.size(); i++) {
             if (offerte.get(i).getPrezzo() < offerte.get(i - 1).getPrezzo()) {
-                return; // Lista non ordinata in modo crescente, non assegnare
+                throw new IllegalArgumentException("Lista non ordinata.");
             }
         }
         this.offerte = offerte;
@@ -247,7 +247,7 @@ public class Asta {
     }
 
     public int getPrezzoIniziale() {
-        return getOfferte().get(0).prezzo;
+        return getOfferte().size() > 0 ? getOfferte().get(0).getPrezzo() : 0;
     }
 
     public Offerta getOffertaVincitrice() {
