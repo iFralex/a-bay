@@ -21,6 +21,21 @@ public class OffertaServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession(false);
+        // Move errors/success from session to request if present (for PRG)
+        if (session != null) {
+            Object errors = session.getAttribute("errors");
+            if (errors != null) {
+                request.setAttribute("errors", errors);
+                session.removeAttribute("errors");
+            }
+            Object success = session.getAttribute("success");
+            if (success != null) {
+                request.setAttribute("success", success);
+                session.removeAttribute("success");
+            }
+        }
+
         int astaId = 0;
         try {
             astaId = Integer.parseInt(request.getParameter("id"));
@@ -73,7 +88,7 @@ public class OffertaServlet extends HttpServlet {
 
         List<String> errors = new ArrayList<>();
         request.setAttribute("asta", asta);
-        int prezzoMinimo = (max != null ? max.getPrezzo() : asta.getPrezzoIniziale()) + asta.getRialzoMinimo();
+        int prezzoMinimo = max != null ? max.getPrezzo() + asta.getRialzoMinimo() : asta.getPrezzoIniziale();
         if (prezzoOfferto >= prezzoMinimo) {
             try {
                 Offerta offerta = new Offerta(username, prezzoOfferto);
@@ -88,10 +103,11 @@ public class OffertaServlet extends HttpServlet {
             errors.add("L'offerta deve essere maggiore di " + prezzoMinimo + " €");
 
         if (errors.size() > 0)
-            request.setAttribute("errors", errors);
+            session.setAttribute("errors", errors);
         else
-            request.setAttribute("success", "Offerta registrata!");
-        request.setAttribute("asta", asta);
-        request.getRequestDispatcher("/offerta.jsp").forward(request, response);
+            session.setAttribute("success", "Offerta registrata!");
+
+        // Always redirect to avoid form resubmission
+        response.sendRedirect("offerta?id=" + astaId);
     }
 }
