@@ -19,6 +19,20 @@ public class VendoServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            Object errors = session.getAttribute("errors");
+            if (errors != null) {
+                request.setAttribute("errors", errors);
+                session.removeAttribute("errors");
+            }
+            Object success = session.getAttribute("success");
+            if (success != null) {
+                request.setAttribute("success", success);
+                session.removeAttribute("success");
+            }
+        }
+
         Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
 
         if (utente == null) {
@@ -91,7 +105,7 @@ public class VendoServlet extends HttpServlet {
                 int prezzo = Integer.parseInt(request.getParameter("prezzo"));
                 Articolo articolo = new Articolo(-1, nome, prezzo, utente.getUsername(), descrizione, immagine);
                 DbManager.inserisciArticolo(articolo);
-                request.setAttribute("success", "Articolo salvato con successo!");
+                session.setAttribute("success", "Articolo salvato con successo!");
             } catch (NumberFormatException e) {
                 errors.add("Prezzo non valido.");
             } catch (IllegalArgumentException e) {
@@ -127,7 +141,7 @@ public class VendoServlet extends HttpServlet {
                 asta.setImmagine(request.getParameter("immagine"));
 
                 DbManager.inserisciAsta(asta);
-                request.setAttribute("success", "Asta salvata con successo!");
+                session.setAttribute("success", "Asta salvata con successo!");
             } catch (IllegalArgumentException e) {
                 errors.add("Impossibile creare l'asta: " + e.getMessage());
             } catch (Exception e) {
@@ -137,10 +151,10 @@ public class VendoServlet extends HttpServlet {
         }
 
         if (!errors.isEmpty()) {
-            request.setAttribute("errors", errors);
+            session.setAttribute("errors", errors);
         }
 
-        // Reindirizza alla vista con i dati aggiornati
-        doGet(request, response);
+        // Reindirizza alla vista con i dati aggiornati (POST-Redirect-GET)
+        response.sendRedirect("vendo");
     }
 }
