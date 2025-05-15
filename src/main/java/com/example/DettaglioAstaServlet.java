@@ -9,6 +9,9 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/dettaglioAsta")
 public class DettaglioAstaServlet extends HttpServlet {
@@ -16,34 +19,102 @@ public class DettaglioAstaServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Recupera ID asta dai parametri
-        int astaId = Integer.parseInt(request.getParameter("id"));
         HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("user");
+        Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
+
+        if (utente == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        // Recupera ID asta dai parametri
+        int astaId = 0;
+        try {
+            astaId = Integer.parseInt(request.getParameter("id"));
+        } catch (Exception e) {
+            response.sendRedirect("vendo.jsp");
+            return;
+        }
+
+        List<String> errors = new ArrayList<>();
 
         // Recupera asta e offerte dal DB
-        Asta asta = DbManager.getAstaById(astaId);
+        Asta asta = null;
+        try {
+            asta = DbManager.getAstaById(astaId);
+            if (asta == null) {
+                response.sendRedirect("vendo.jsp");
+                return;
+            }
 
-        // Calcola se l'asta è scaduta
-        boolean chiusa = asta.isChiusa();
+            if (utente.getUsername() == asta.getVenditore()) {
+                response.sendRedirect("vendo.jsp");
+                return;
+            }
 
-        // Se l'asta è chiusa, recupera l'indirizzo di spedizione
-        if (chiusa && asta.getOffertaVincitrice() != null) {
-            String indirizzo = DbManager.getIndirizzoSpedizione(asta.getOffertaVincitrice().getUsername());
-            request.setAttribute("indirizzoSpedizione", indirizzo);
+            // Se l'asta è chiusa, recupera l'utente vicncitore
+            if (asta.getOffertaVincitrice() != null) {
+                try {
+                    Utente vincitore = DbManager.getUtente(asta.getOffertaVincitrice().getUsername());
+                    request.setAttribute("vincitore", vincitore);
+                } catch (IllegalArgumentException e) {
+                    errors.add(e.getMessage());
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            errors.add(e.getMessage());
+        } catch (SQLException e) {
+            errors.add("Errore nel Database: " + e.getMessage());
         }
 
         // Inoltra i dati alla JSP
         request.setAttribute("asta", asta);
+        if (errors.size() > 0)
+            request.setAttribute("errors", errors);
         request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int astaId = Integer.parseInt(request.getParameter("id"));
+
+        int astaId;
+        try {
+            astaId = Integer.parseInt(request.getParameter("id"));
+        } catch (Exception e) {
+            response.sendRedirect("vendo.jsp");
+            return;
+        }
+
         String aggiudicatario = request.getParameter("aggiudicatario");
-        DbManager.chiudiAsta(astaId, aggiudicatario);
-        response.sendRedirect("dettaglioAsta?id=" + astaId);
+        List<String> errors = new ArrayList<>();
+        Asta asta = null;
+
+        try {
+            DbManager.chiudiAsta(astaId, aggiudicatario);
+            request.setAttribute("success", "Asta chiusa!");
+        } catch (SQLException e) {
+            errors.add("Impossibile chiudere asta per un errore nel Database: " + e.getMessage());
+        }
+
+        try {
+            asta = DbManager.getAstaById(astaId);
+            if (asta != null && asta.getOffertaVincitrice() != null) {
+                try {
+                    Utente vincitore = DbManager.getUtente(asta.getOffertaVincitrice().getUsername());
+                    request.setAttribute("vincitore", vincitore);
+                } catch (IllegalArgumentException e) {
+                    errors.add(e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            errors.add("Errore nel caricamento asta: " + e.getMessage());
+        }
+
+        request.setAttribute("asta", asta);
+        if (!errors.isEmpty())
+            request.setAttribute("errors", errors);
+
+        request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request, response);
     }
 }

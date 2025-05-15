@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -22,10 +23,18 @@ public class AcquistoServlet extends HttpServlet {
         String parolaChiave = request.getParameter("parolaChiave");
         LocalDateTime now = LocalDateTime.now();
 
+        List<String> errors = new ArrayList<>();
+        
         // Recupera le aste aperte che corrispondono alla parola chiave
         List<Asta> asteAperte = new ArrayList<>();
         if (parolaChiave != null && !parolaChiave.trim().isEmpty()) {
-            asteAperte = DbManager.getAstePerParolaChiave(parolaChiave, now);
+            try {
+                asteAperte = DbManager.getAstePerParolaChiave(parolaChiave, now);
+            } catch (IllegalArgumentException e) {
+                errors.add(e.getMessage());
+            } catch (SQLException e) {
+                errors.add("Errore nel database: " + e.getMessage());
+            }
         }
 
         // Ordina le aste per tempo rimanente decrescente
@@ -39,13 +48,19 @@ public class AcquistoServlet extends HttpServlet {
         if (session != null) {
             Utente utente = (Utente) session.getAttribute("user");
             if (utente != null) {
-                asteAggiudicate = DbManager.getAsteVinteDaUtente(utente.getUsername());
+                try {
+                    asteAggiudicate = DbManager.getAsteVinteDaUtente(utente.getUsername());
+                } catch (IllegalArgumentException e) {
+                    errors.add(e.getMessage());
+                }
             }
         }
 
         request.setAttribute("asteAperte", asteAperte);
         request.setAttribute("asteAggiudicate", asteAggiudicate);
         request.setAttribute("parolaChiave", parolaChiave);
+if (errors.size() > 0)
+        request.setAttribute("errors", errors);
 
         request.getRequestDispatcher("/acquisto.jsp").forward(request, response);
     }

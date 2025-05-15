@@ -5,6 +5,13 @@
     <title>Pagina Acquisto</title>
 </head>
 <body>
+    <c:if test="${not empty errors}">
+        <c:forEach var="err" items="${errors}">
+            <div style="padding:10px; background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; border-radius: 5px; margin-bottom: 15px;">
+                <strong>Errore:</strong> ${err}
+            </div>
+        </c:forEach>
+    </c:if>
     <h1>Ricerca Aste</h1>
     <form method="get" action="acquisto">
         <input type="text" name="parolaChiave" value="${parolaChiave}" placeholder="Inserisci parola chiave"/>
@@ -25,22 +32,25 @@
         </ul>
     </c:if>
 
-    <h2>Offerte aggiudicate</h2>
-    <c:if test="${not empty asteAggiudicate}">
-        <ul>
-            <c:forEach var="asta" items="${asteAggiudicate}">
-                <li>
-                    Asta #${asta.id} - Articoli: 
-                    <c:forEach var="art" items="${asta.articoli}">
-                        ${art.nome}&nbsp;
-                    </c:forEach>
-                    <br/>Prezzo finale: €${asta.offertaMassima.prezzo}
-                </li>
-            </c:forEach>
-        </ul>
-    </c:if>
-    <c:if test="${empty offerteAggiudicate}">
-        <p>Non hai ancora aggiudicato nessuna offerta.</p>
+    <jsp:useBean id="user" class="model.Utente" scope="session" />
+    <c:if test="${user.username ne null}">
+        <h2>Offerte aggiudicate</h2>
+        <c:if test="${not empty asteAggiudicate}">
+            <ul>
+                <c:forEach var="asta" items="${asteAggiudicate}">
+                    <li>
+                        Asta #${asta.id} - Articoli: 
+                        <c:forEach var="art" items="${asta.articoli}">
+                            ${art.nome}&nbsp;
+                        </c:forEach>
+                        <br/>Prezzo finale: €${asta.offertaMassima.prezzo}
+                    </li>
+                </c:forEach>
+            </ul>
+        </c:if>
+        <c:if test="${empty asteAggiudicate}">
+            <p>Non hai ancora aggiudicato nessuna offerta.</p>
+        </c:if>
     </c:if>
 </body>
 </html>

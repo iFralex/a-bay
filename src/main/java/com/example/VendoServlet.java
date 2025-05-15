@@ -1,22 +1,24 @@
 package com.example;
 
-import model.*;
-import utils.DbManager;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.*;
+import utils.DbManager;
+
 import java.io.IOException;
-import java.util.List;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @WebServlet("/vendo")
 public class VendoServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-
         Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
 
         if (utente == null) {
@@ -24,27 +26,121 @@ public class VendoServlet extends HttpServlet {
             return;
         }
 
-        List<Articolo> articoliUtente = DbManager.getArticoliDisponibiliPerUtente(utente.getUsername());
-        for (Articolo art : articoliUtente) {
-            System.out.println(art.getNome());
+        List<String> errors = new ArrayList<>();
+
+        try {
+            List<Articolo> articoliUtente = DbManager.getArticoliDisponibiliPerUtente(utente.getUsername());
+            request.setAttribute("articoliUtente", articoliUtente);
+        } catch (IllegalArgumentException e) {
+            errors.add(e.getMessage());
+        } catch (SQLException e) {
+            errors.add("Errore nel Database:" + e.getMessage());
         }
 
-        List<Asta> asteAperte = DbManager.getAsteUtente(utente.getUsername(), false); // non chiuse
-        List<Asta> asteChiuse = DbManager.getAsteUtente(utente.getUsername(), true); // chiuse
+        try {
+            List<Asta> asteAperte = DbManager.getAsteUtente(utente.getUsername(), false);
+            request.setAttribute("asteAperte", asteAperte);
+        } catch (IllegalArgumentException e) {
+            errors.add(e.getMessage());
+        } catch (SQLException e) {
+            errors.add("Errore nel Database:" + e.getMessage());
+        }
 
-        request.setAttribute("articoliUtente", articoliUtente);
-        request.setAttribute("asteAperte", asteAperte);
-        request.setAttribute("asteChiuse", asteChiuse);
+        try {
+            List<Asta> asteChiuse = DbManager.getAsteUtente(utente.getUsername(), true);
+            request.setAttribute("asteChiuse", asteChiuse);
+        } catch (IllegalArgumentException e) {
+            errors.add(e.getMessage());
+        } catch (SQLException e) {
+            errors.add("Errore nel Database:" + e.getMessage());
+        }
+
+        Object attr = request.getAttribute("errors");
+        if (attr instanceof List)
+            errors.addAll((List<String>) attr);
+
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+        }
 
         request.getRequestDispatcher("/vendo.jsp").forward(request, response);
     }
 
-
-    //succede se CreaAstaServlet vede che l'asta e' vuota
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Non gestiamo POST in questo servlet
-        this.doGet(request, response);
+
+        HttpSession session = request.getSession(false);
+        Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
+
+        if (utente == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        String action = request.getParameter("action");
+        List<String> errors = new ArrayList<>();
+
+        if ("createArticolo".equals(action)) {
+            // Creazione articolo
+            String nome = request.getParameter("nome");
+            String descrizione = request.getParameter("descrizione");
+            String immagine = request.getParameter("immagine");
+
+            try {
+                int prezzo = Integer.parseInt(request.getParameter("prezzo"));
+                Articolo articolo = new Articolo(-1, nome, prezzo, utente.getUsername(), descrizione, immagine);
+                DbManager.inserisciArticolo(articolo);
+                request.setAttribute("success", "Articolo salvato con successo!");
+            } catch (NumberFormatException e) {
+                errors.add("Prezzo non valido.");
+            } catch (IllegalArgumentException e) {
+                errors.add("Impossibile aggiungere l'articolo: " + e.getMessage());
+            } catch (SQLException e) {
+                errors.add("Errore nel database durante l'inserimento dell'articolo.");
+                e.printStackTrace();
+            }
+
+        } else if ("createAsta".equals(action)) {
+            // Creazione asta
+            String[] articoliIds = request.getParameterValues("articoliId");
+            if (articoliIds == null)
+                articoliIds = new String[0];
+
+            try {
+                List<Integer> idArticoli = new ArrayList<>();
+                int prezzoIniziale = 0;
+
+                for (String idStr : articoliIds) {
+                    int id = Integer.parseInt(idStr);
+                    idArticoli.add(id);
+                    prezzoIniziale += DbManager.getPrezzoArticolo(id);
+                }
+
+                Asta asta = new Asta();
+                asta.setIdArticoli(idArticoli);
+                asta.newOfferta(utente.getUsername(), prezzoIniziale);
+                asta.setRialzoMinimo(Integer.parseInt(request.getParameter("rialzo")));
+                asta.setScadenza(LocalDateTime.parse(request.getParameter("scadenza").replace(" ", "T")));
+                asta.setNome(request.getParameter("nome"));
+                asta.setDescrizione(request.getParameter("descrizione"));
+                asta.setImmagine(request.getParameter("immagine"));
+
+                DbManager.inserisciAsta(asta);
+                request.setAttribute("success", "Asta salvata con successo!");
+            } catch (IllegalArgumentException e) {
+                errors.add("Impossibile creare l'asta: " + e.getMessage());
+            } catch (Exception e) {
+                errors.add("Errore nella creazione dell'asta. Verifica i dati inseriti.");
+                e.printStackTrace();
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+        }
+
+        // Reindirizza alla vista con i dati aggiornati
+        doGet(request, response);
     }
 }

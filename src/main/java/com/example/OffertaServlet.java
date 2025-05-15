@@ -9,17 +9,39 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.sql.SQLClientInfoException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/offerta")
 public class OffertaServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int astaId = Integer.parseInt(request.getParameter("id"));
-        Asta asta = DbManager.getAstaById(astaId); // recupera asta con articoli
 
-        request.setAttribute("asta", asta);
+        int astaId = 0;
+        try {
+            astaId = Integer.parseInt(request.getParameter("id"));
+        } catch (Exception e) {
+            response.sendRedirect("acquisto.jsp");
+            return;
+        }
+
+        try {
+            Asta asta = DbManager.getAstaById(astaId); // recupera asta con articoli
+            if (asta == null) {
+                response.sendRedirect("acquisto.jsp");
+                return;
+            }
+            request.setAttribute("asta", asta);
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("errors", List.of(e.getMessage()));
+        } catch (SQLException e) {
+            request.setAttribute("errors", List.of("Errore nel database: " + e.getMessage()));
+        }
+
         request.getRequestDispatcher("/offerta.jsp").forward(request, response);
     }
 
@@ -36,24 +58,40 @@ public class OffertaServlet extends HttpServlet {
         }
 
         String username = utente.getUsername();
-        int astaId = Integer.parseInt(request.getParameter("astaId"));
-        double prezzoOfferto = Double.parseDouble(request.getParameter("prezzo"));
 
-        Asta asta = DbManager.getAstaById(astaId);
+        int astaId = Integer.parseInt(request.getParameter("astaId"));
+        int prezzoOfferto = Integer.parseInt(request.getParameter("prezzo"));
+
+        Asta asta = null;
+        try {
+            asta = DbManager.getAstaById(astaId);
+        } catch (Exception e) {
+            response.sendRedirect("acquista");
+            return;
+        }
         Offerta max = asta.getOffertaMassima();
 
-        double prezzoMinimo = max != null ? max.getPrezzo() + asta.getRialzoMinimo() : asta.getRialzoMinimo();
-        System.out.print("2prezzoOfferto" + prezzoOfferto);
+        List<String> errors = new ArrayList<>();
+        request.setAttribute("asta", asta);
+        int prezzoMinimo = max != null ? max.getPrezzo() + asta.getRialzoMinimo() : asta.getRialzoMinimo();
         if (prezzoOfferto >= prezzoMinimo) {
-            System.out.print("p1rezzoOfferto" + prezzoOfferto);
             try {
-                System.out.print("prezzoOfferto" + prezzoOfferto);
-                DbManager.registraOfferta(astaId, username, prezzoOfferto, LocalDateTime.now());
-            } catch (Exception e) {
-                e.getStackTrace();
+                Offerta offerta = new Offerta(username, prezzoOfferto);
+                asta.newOfferta(offerta);
+                DbManager.registraOfferta(astaId, offerta);
+            } catch (IllegalArgumentException e) {
+                errors.add("Impossibile registrare offerta: " + e.getMessage());
+            } catch (SQLException e) {
+                errors.add("Impossibile registrare offerta per errore nel Database: " + e.getMessage());
             }
-        }
+        } else
+            errors.add("L'offerta deve essere maggiore di " + prezzoMinimo + " €");
 
-        response.sendRedirect("offerta?id=" + astaId);
+        if (errors.size() > 0)
+            request.setAttribute("errors", errors);
+        else
+            request.setAttribute("success", "Offerta registrata!");
+        request.setAttribute("asta", asta);
+        request.getRequestDispatcher("/offerta.jsp").forward(request, response);
     }
 }
