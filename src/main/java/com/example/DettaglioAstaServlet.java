@@ -19,12 +19,21 @@ public class DettaglioAstaServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
 
         if (utente == null) {
             response.sendRedirect("login.jsp");
             return;
+        }
+
+        if (session.getAttribute("errors") != null) {
+            request.setAttribute("errors", session.getAttribute("errors"));
+            session.removeAttribute("errors");
+        }
+        if (session.getAttribute("success") != null) {
+            request.setAttribute("success", session.getAttribute("success"));
+            session.removeAttribute("success");
         }
 
         // Recupera ID asta dai parametri
@@ -115,6 +124,8 @@ public class DettaglioAstaServlet extends HttpServlet {
         if (!errors.isEmpty())
             request.setAttribute("errors", errors);
 
-        request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request, response);
+        //request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request, response);
+        response.sendRedirect("dettaglioAsta?id=" + astaId);
+
     }
 }
