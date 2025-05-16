@@ -340,38 +340,25 @@ public class DbManager {
         return aste;
     }
 
-    public static Utente getUtente(String username) {
+    public static Utente getUtente(String username) throws SQLException  {
         Utente user = null;
         String sql = "SELECT * FROM utente WHERE username = ?";
-
-        try (Connection con = getConnection()) {
-            if (con != null && !con.isClosed()) {
-                System.out.println("Database connection successful!");
-            } else {
-                System.out.println("Failed to connect to the database.");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                user = new Utente();
-                user.setUsername(rs.getString("username"));
-                user.setPasswordHash(rs.getString("pass_hash"));
-                user.setNome(rs.getString("nome"));
-                user.setCognome(rs.getString("cognome"));
-                user.setIndirizzo(rs.getString("indirizzo"));
-
+                user = new Utente(
+                rs.getString("username"),
+                rs.getString("pass_hash"),
+                rs.getString("nome"),
+                rs.getString("cognome"),
+                rs.getString("indirizzo"));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
-        return user != null ? user : new Utente(); // se non trovato, ritorna oggetto vuoto
+        return user;
     }
 
     public static void registraOfferta(int astaId, Asta.Offerta offerta) throws SQLException {

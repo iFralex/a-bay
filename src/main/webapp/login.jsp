@@ -8,12 +8,10 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+<jsp:include page="/templates/navbar.jsp" />
+<jsp:include page="templates/messaggi.jsp" />
 <div class="home-container">
     <h1>Login</h1>
-
-    <c:if test="${not empty errorMessage}">
-        <div class="error-message">${errorMessage}</div>
-    </c:if>
 
     <form action="${pageContext.request.contextPath}/login" method="post">
         <div class="form-group">

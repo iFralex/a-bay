@@ -7,17 +7,27 @@ public class Utente {
     private String cognome;
     private String indirizzo;
 
+    public Utente(String username, String passwordHash, String nome, String cognome, String indirizzo) {
+        setUsername(username);
+        setPasswordHash(passwordHash);
+        setNome(nome);
+        setCognome(cognome);
+        setIndirizzo(indirizzo);
+    }
+
     // Setters
     public void setUsername(String username) {
         if (username == null || username.trim().length() < 1 || username.trim().length() >= 100) {
-            throw new IllegalArgumentException("Username non valido: deve avere almeno 1 carattere o maggiore di 100 caratteri.");
+            throw new IllegalArgumentException(
+                    "Username non valido: deve avere almeno 1 carattere o maggiore di 100 caratteri.");
         }
         this.username = username.trim();
     }
 
     public void setPasswordHash(String hash) {
         if (hash == null || hash.trim().length() < 10 || hash.trim().length() >= 250) {
-            throw new IllegalArgumentException("Hash della password non valido: deve avere almeno 10 caratteri e al più 250.");
+            throw new IllegalArgumentException(
+                    "Hash della password non valido: deve avere almeno 10 caratteri e al più 250.");
         }
         this.passwordHash = hash.trim();
     }
@@ -38,7 +48,8 @@ public class Utente {
 
     public void setIndirizzo(String indirizzo) {
         if (indirizzo == null || indirizzo.trim().length() < 6 || indirizzo.trim().length() >= 400) {
-            throw new IllegalArgumentException("Indirizzo non valido: non valido: deve avere almeno 6 caratteri e al più 400.");
+            throw new IllegalArgumentException(
+                    "Indirizzo non valido: non valido: deve avere almeno 6 caratteri e al più 400.");
         }
         this.indirizzo = indirizzo.trim();
     }

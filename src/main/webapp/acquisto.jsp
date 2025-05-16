@@ -6,13 +6,8 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
-<c:if test="${not empty errors}">
-    <c:forEach var="err" items="${errors}">
-        <div class="error-box">
-            <strong>Errore:</strong> ${err}
-        </div>
-    </c:forEach>
-</c:if>
+<jsp:include page="/templates/navbar.jsp" />
+<jsp:include page="templates/messaggi.jsp" />
 <h1>Ricerca Aste</h1>
 <form method="get" action="acquisto">
     <input type="text" name="parolaChiave" value="${parolaChiave}" placeholder="Inserisci parola chiave"/>

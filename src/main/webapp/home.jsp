@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+<jsp:include page="/templates/navbar.jsp" />
+<jsp:include page="templates/messaggi.jsp" />
 <div class="home-container">
     <h1>Benvenuto su Aste Online</h1>
     <h2>Cosa vuoi fare?</h2>

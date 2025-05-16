@@ -103,7 +103,7 @@
                         <artifactId>${project.artifactId}</artifactId>
                         <type>war</type>
                         <properties>
-                            <context>demo</context>
+                            <context>/</context>
                         </properties>
                     </deployable>
                 </deployables>
