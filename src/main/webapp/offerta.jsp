@@ -1,60 +1,80 @@
 <%@ page import="model.*, java.util.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-<html>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<head><title>Dettaglio Asta</title></head>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dettaglio Asta</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
 <body>
+<div class="auction-container">
     <c:if test="${not empty errors}">
         <c:forEach var="err" items="${errors}">
-            <div style="padding:10px; background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; border-radius: 5px; margin-bottom: 15px;">
+            <div class="error-message">
                 <strong>Errore:</strong> ${err}
             </div>
         </c:forEach>
     </c:if>
 
-
     <c:if test="${not empty success}">
-        <div style="padding:10px; background-color:rgb(116, 203, 116); color:rgb(27, 78, 0); border: 1px solid #f5c2c7; border-radius: 5px; margin-bottom: 15px;">
+        <div class="success-message">
             <strong>Successo:</strong> ${success}
         </div>
     </c:if>
-    
+
     <c:choose>
-    <c:when test="${not empty asta}">
-    <h2>Asta #${asta.id}: ${asta.nome}</h2>
-    <p>${asta.descrizione}</p>
-    <p>Scadenza: ${asta.formattedScadenza}</p>
+        <c:when test="${not empty asta}">
+            <h1>Asta #${asta.id}: ${asta.nome}</h1>
 
-    <h3>Articoli inclusi:</h3>
-    <ul>
-        <c:forEach var="articolo" items="${asta.articoli}">
-            <li>${articolo.nome} - ${articolo.descrizione}</li>
-        </c:forEach>
-    </ul>
+            <div class="auction-details">
+                <p>${asta.descrizione}</p>
+                <p><strong>Scadenza:</strong> ${asta.formattedScadenza}</p>
 
-    <h3>Offerte ricevute:</h3>
-    <ul>
-        <c:forEach var="offerta" items="${asta.offerteSenzaVenditore}">
-            <li>${offerta.username} - €${offerta.prezzo} - ${offerta.formattedDate}</li>
-        </c:forEach>
-    </ul>
+                <h2>Articoli inclusi:</h2>
+                <ul>
+                    <c:forEach var="articolo" items="${asta.articoli}">
+                        <li>${articolo.nome} - ${articolo.descrizione}</li>
+                    </c:forEach>
+                </ul>
 
-    <jsp:useBean id="user" class="model.Utente" scope="session" />
-    <c:if test="${user.username ne null and !asta.chiusa and user.username ne asta.venditore}">
-        <h3>Inserisci una nuova offerta:</h3>
-        <form method="post" action="offerta">
-            <input type="hidden" name="astaId" value="${asta.id}" />
-            <label for="prezzo">Prezzo (€) (Rialzo: ${asta.rialzoMinimo}):</label>
-            <input type="number" step="1" name="prezzo" id="prezzo" required />
-            <button type="submit">Invia Offerta</button>
-        </form>
-    </c:if>
-    </c:when>
+                <h2>Offerte ricevute:</h2>
+                <table class="auction-table">
+                    <tr>
+                        <th>Utente</th>
+                        <th>Importo</th>
+                        <th>Data/Ora</th>
+                    </tr>
+                    <c:forEach var="offerta" items="${asta.offerteSenzaVenditore}">
+                        <tr>
+                            <td>${offerta.username}</td>
+                            <td>€${offerta.prezzo}</td>
+                            <td>${offerta.formattedDate}</td>
+                        </tr>
+                    </c:forEach>
+                </table>
 
-<c:otherwise>
-<p>Asta non visualizzabile o non trovata.</p>
-</c:otherwise>
-</c:choose>
+                <jsp:useBean id="user" class="model.Utente" scope="session" />
+                <c:if test="${user.username ne null and !asta.chiusa and user.username ne asta.venditore}">
+                    <h2>Inserisci una nuova offerta:</h2>
+                    <form method="post" action="offerta">
+                        <input type="hidden" name="astaId" value="${asta.id}" />
+                        <div class="form-group">
+                            <label for="prezzo">Prezzo (€) (Rialzo minimo: €${asta.rialzoMinimo}):</label>
+                            <input type="number" step="1" name="prezzo" id="prezzo" required />
+                        </div>
+                        <button type="submit" class="main-action" style="width:100%; margin:10px 0;">Invia Offerta</button>
+                    </form>
+                </c:if>
+            </div>
+        </c:when>
+
+        <c:otherwise>
+            <p>Asta non visualizzabile o non trovata.</p>
+        </c:otherwise>
+    </c:choose>
+</div>
 </body>
 </html>
