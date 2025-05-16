@@ -1,0 +1,176 @@
+:root {
+    --primary: #007bff;
+    --primary-dark: #0056b3;
+    --error-bg: #f8d7da;
+    --error-color: #842029;
+    --success-bg: rgb(116, 203, 116);
+    --success-color: rgb(27, 78, 0);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 40px;
+    text-align: center;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+/* Message boxes */
+.error-message, .error-box, .success-message, .success-box {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #f5c2c7;
+}
+
+.error-message, .error-box {
+    background-color: var(--error-bg);
+    color: var(--error-color);
+}
+
+.success-message, .success-box {
+    background-color: var(--success-bg);
+    color: var(--success-color);
+}
+
+/* Forms */
+form {
+    margin: 20px auto;
+    display: inline-block;
+}
+
+input[type="text"], input[type="password"] {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Buttons */
+button, input[type="submit"], .main-action {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover, input[type="submit"]:hover, .main-action:hover {
+    background-color: var(--primary-dark);
+}
+
+button, input[type="submit"] {
+    padding: 8px 16px;
+}
+
+.main-action {
+    display: inline-block;
+    margin: 20px 15px;
+    padding: 12px 28px;
+    font-size: 1.1em;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Links and Lists */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #fff;
+    margin: 10px auto;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    max-width: 600px;
+    text-align: left;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Containers */
+.home-container, .auction-container {
+    background: #fff;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.home-container {
+    max-width: 500px;
+    margin: 60px auto;
+    text-align: center;
+}
+
+.auction-container {
+    max-width: 700px;
+    text-align: left;
+}
+
+/* Auction page specific styles */
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.auction-header h1 {
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.winner-box {
+    background: #e6ffe6;
+    border: 1px solid #b2f2b2;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.status-open {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.status-closed {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.auction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: #fafbfc;
+}
+
+.auction-table th, .auction-table td {
+    padding: 10px 12px;
+    border: 1px solid #e1e4e8;
+    text-align: center;
+}
+
+.auction-table th {
+    background: #f0f4f8;
+    color: #333;
+}
+
+.close-auction-form {
+    margin-top: 25px;
+    text-align: right;
+}
