@@ -7,21 +7,10 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+<jsp:include page="/templates/navbar.jsp" />
+<jsp:include page="templates/messaggi.jsp" />
 <div class="auction-container">
-    <c:if test="${not empty errors}">
-        <c:forEach var="err" items="${errors}">
-            <div class="error-message">
-                <strong>Errore:</strong> ${err}
-            </div>
-        </c:forEach>
-    </c:if>
-
-    <c:if test="${not empty success}">
-        <div class="success-message">
-            <strong>Successo:</strong> ${success}
-        </div>
-    </c:if>
-
+    
     <c:choose>
         <c:when test="${not empty asta}">
             <jsp:useBean id="asta" scope="request" type="model.Asta"/>

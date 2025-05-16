@@ -1,6 +1,8 @@
 package com.example;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -27,8 +29,20 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        Utente utente = DbManager.getUtente(username);
-                
+        Utente utente = null;
+
+        try {
+            utente = DbManager.getUtente(username);
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("errors", List.of("Errore nel recuperare l'utente: " + e.getMessage()));
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        } catch (SQLException e) {
+            request.setAttribute("errors", List.of("Errore neldatabase: " + e.getMessage()));
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            return;
+        }
+
         if (utente != null) {
             boolean isPasswordValid = PasswordUtils.verifyPassword(password, utente.getPasswordHash());
 
@@ -41,7 +55,7 @@ public class LoginServlet extends HttpServlet {
             }
         }
 
-        request.setAttribute("errorMessage", "Credenziali non valide!");
+        request.setAttribute("errors", List.of("Credenziali non valide!"));
         request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 }
