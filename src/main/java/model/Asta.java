@@ -74,7 +74,7 @@ public class Asta {
     private Offerta offertaMassima;
     private String nome;
     private String descrizione;
-    private String imageUrl;
+    private String encodedImage; // base64 for display
     private List<Offerta> offerte = new ArrayList<>();
 
     // Getters e Setters
@@ -173,11 +173,12 @@ public class Asta {
         this.descrizione = descrizione.trim();
     }
 
-    public void setImmagine(String imageUrl) {
-        if (imageUrl != null && imageUrl.trim().length() >= 150) {
-            throw new IllegalArgumentException("descrizione non valido: non può essere più lungo di 150 caratteri.");
-        }
-        this.imageUrl = imageUrl.trim();
+    public void setImmagine(String encodedImage) {
+        this.encodedImage = encodedImage;
+    }
+
+    public String getImmagine() {
+        return this.encodedImage;
     }
 
     public String getNome() {
@@ -186,10 +187,6 @@ public class Asta {
 
     public String getDescrizione() {
         return this.descrizione;
-    }
-
-    public String getImmagine() {
-        return this.imageUrl;
     }
 
     public void newOfferta(Offerta offerta) {

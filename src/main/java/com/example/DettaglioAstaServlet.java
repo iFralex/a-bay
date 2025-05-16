@@ -11,6 +11,7 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/dettaglioAsta")
@@ -78,6 +79,9 @@ public class DettaglioAstaServlet extends HttpServlet {
 
         // Inoltra i dati alla JSP
         request.setAttribute("asta", asta);
+        List<Offerta> offerte = asta.getOfferteSenzaVenditore();
+        Collections.reverse(offerte);
+        request.setAttribute("offerteSenzaVenditoreReversed", offerte);
         if (errors.size() > 0)
             request.setAttribute("errors", errors);
         request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request, response);

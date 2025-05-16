@@ -1,17 +1,20 @@
 package com.example;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
 import utils.DbManager;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @WebServlet("/vendo")
+@MultipartConfig
 public class VendoServlet extends HttpServlet {
 
     @Override
@@ -92,6 +95,9 @@ public class VendoServlet extends HttpServlet {
             return;
         }
 
+        System.out.println("Parameters:");
+        request.getParameterMap().forEach((k, v) -> System.out.println(k + " = " + Arrays.toString(v)));
+
         String action = request.getParameter("action");
         List<String> errors = new ArrayList<>();
 
@@ -99,12 +105,18 @@ public class VendoServlet extends HttpServlet {
             // Creazione articolo
             String nome = request.getParameter("nome");
             String descrizione = request.getParameter("descrizione");
-            String immagine = request.getParameter("immagine");
+            Part imagePart = request.getPart("immagine");
+            InputStream imageStream = null;
+            String mimeType = null;
+            if (imagePart != null) {
+                imageStream = imagePart.getInputStream();
+                String filename = imagePart.getSubmittedFileName();
+                mimeType = getServletContext().getMimeType(filename);
+            }
 
             try {
                 int prezzo = Integer.parseInt(request.getParameter("prezzo"));
-                Articolo articolo = new Articolo(-1, nome, prezzo, utente.getUsername(), descrizione, immagine);
-                DbManager.inserisciArticolo(articolo);
+                DbManager.inserisciArticolo(nome, descrizione, imageStream, prezzo, utente.getUsername());
                 session.setAttribute("success", "Articolo salvato con successo!");
             } catch (NumberFormatException e) {
                 errors.add("Prezzo non valido.");
@@ -116,7 +128,7 @@ public class VendoServlet extends HttpServlet {
             }
 
         } else if ("createAsta".equals(action)) {
-            // Creazione asta
+            // Auction creation with image upload
             String[] articoliIds = request.getParameterValues("articoliId");
             if (articoliIds == null)
                 articoliIds = new String[0];
@@ -131,6 +143,16 @@ public class VendoServlet extends HttpServlet {
                     prezzoIniziale += DbManager.getPrezzoArticolo(id);
                 }
 
+                // Handle image upload
+                Part imagePart = request.getPart("immagine");
+                String encodedImg = null;
+                if (imagePart != null && imagePart.getSize() > 0) {
+                    try (InputStream imageStream = imagePart.getInputStream()) {
+                        byte[] imgBytes = imageStream.readAllBytes();
+                        encodedImg = java.util.Base64.getEncoder().encodeToString(imgBytes);
+                    }
+                }
+
                 Asta asta = new Asta();
                 asta.setIdArticoli(idArticoli);
                 asta.newOfferta(utente.getUsername(), prezzoIniziale);
@@ -138,7 +160,7 @@ public class VendoServlet extends HttpServlet {
                 asta.setScadenza(LocalDateTime.parse(request.getParameter("scadenza").replace(" ", "T")));
                 asta.setNome(request.getParameter("nome"));
                 asta.setDescrizione(request.getParameter("descrizione"));
-                asta.setImmagine(request.getParameter("immagine"));
+                asta.setImmagine(encodedImg);
 
                 DbManager.inserisciAsta(asta);
                 session.setAttribute("success", "Asta salvata con successo!");

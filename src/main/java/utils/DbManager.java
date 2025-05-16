@@ -75,15 +75,28 @@ public class DbManager {
         }
     }
 
-    public static void inserisciArticolo(Articolo a) throws SQLException {
+    public static void inserisciArticolo(String nome, String descrizione, InputStream imageStream, int prezzo, String venditore) throws SQLException {
         String sql = "INSERT INTO articolo (nome, descrizione, immagine, prezzo, venditore) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, a.getNome());
-            ps.setString(2, a.getDescrizione());
-            ps.setString(3, a.getImmagine());
-            ps.setInt(4, a.getPrezzo());
-            ps.setString(5, a.getVenditore());
+            ps.setString(1, nome);
+            ps.setString(2, descrizione);
+
+            // Read InputStream to byte[]
+            byte[] imageBytes = null;
+            if (imageStream != null) {
+                imageBytes = imageStream.readAllBytes();
+            }
+            if (imageBytes != null) {
+                ps.setBytes(3, imageBytes);
+            } else {
+                ps.setNull(3, java.sql.Types.BLOB);
+            }
+
+            ps.setInt(4, prezzo);
+            ps.setString(5, venditore);
             ps.executeUpdate();
+        } catch (java.io.IOException e) {
+            throw new SQLException("Error reading image stream", e);
         }
     }
 
@@ -105,26 +118,35 @@ public class DbManager {
     public static void inserisciAsta(Asta a) throws SQLException {
         String sql = "INSERT INTO asta (nome, descrizione, immagine, scadenza, rialzo_minimo, venditore) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection con = getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, a.getNome());
             ps.setString(2, a.getDescrizione());
-            ps.setString(3, a.getImmagine());
-            ps.setString(4, a.getScadenza().toString()); // SQLite salva DATETIME come TEXT
+
+            // Handle image as Base64-encoded string or null
+            String img = a.getImmagine();
+            if (img != null && !img.isEmpty()) {
+                byte[] imgBytes = java.util.Base64.getDecoder().decode(img);
+                ps.setBytes(3, imgBytes);
+            } else {
+                ps.setNull(3, java.sql.Types.BLOB);
+            }
+
+            ps.setString(4, a.getScadenza().toString());
             ps.setInt(5, a.getRialzoMinimo());
             ps.setString(6, a.getVenditore());
             ps.executeUpdate();
 
-            // Recupera l'ID generato con last_insert_rowid()
+            // Retrieve generated auction ID
             int idAsta = -1;
             try (Statement st = con.createStatement();
-                    ResultSet rs = st.executeQuery("SELECT last_insert_rowid()")) {
+                 ResultSet rs = st.executeQuery("SELECT last_insert_rowid()")) {
                 if (rs.next()) {
                     idAsta = rs.getInt(1);
                 }
             }
 
-            // Inserisci gli articoli associati all'asta
+            // Insert associated articles and initial offer
             if (idAsta != -1) {
                 for (Integer idArticolo : a.getIdArticoli()) {
                     String relSql = "INSERT INTO asta_articoli (id_asta, id_articolo) VALUES (?, ?)";
@@ -136,7 +158,6 @@ public class DbManager {
                 }
                 registraOfferta(idAsta, a.getOfferte().get(0));
             }
-
         }
     }
 
@@ -148,17 +169,22 @@ public class DbManager {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+                byte[] imgData = rs.getBytes("immagine");
+                String encodedImg = null;
+                if (imgData != null && imgData.length > 0) {
+                    encodedImg = Base64.getEncoder().encodeToString(imgData);
+                }
                 Articolo a = new Articolo(
                         rs.getInt("id"),
                         rs.getString("nome"),
                         rs.getInt("prezzo"),
                         rs.getString("venditore"),
                         rs.getString("descrizione"),
-                        rs.getString("immagine"));
+                        encodedImg);
                 articoli.add(a);
             }
         }
-
+        //
         return articoli;
     }
 
@@ -177,7 +203,14 @@ public class DbManager {
                 a.setId(rs.getInt("id"));
                 a.setNome(rs.getString("nome"));
                 a.setDescrizione(rs.getString("descrizione"));
-                a.setImmagine(rs.getString("immagine"));
+
+                // Handle image BLOB as Base64
+                byte[] imgData = rs.getBytes("immagine");
+                String encodedImg = null;
+                if (imgData != null && imgData.length > 0) {
+                    encodedImg = java.util.Base64.getEncoder().encodeToString(imgData);
+                }
+                a.setImmagine(encodedImg);
                 a.setOfferte(getOffertePerAsta(a.getId()));
                 a.setScadenza(LocalDateTime.parse(rs.getString("scadenza")));
                 a.setRialzoMinimo(rs.getInt("rialzo_minimo"));
@@ -204,14 +237,21 @@ public class DbManager {
                 a.setId(rs.getInt("id"));
                 a.setNome(rs.getString("nome"));
                 a.setDescrizione(rs.getString("descrizione"));
-                a.setImmagine(rs.getString("immagine"));
+
+                // Handle image BLOB as Base64
+                byte[] imgData = rs.getBytes("immagine");
+                String encodedImg = null;
+                if (imgData != null && imgData.length > 0) {
+                    encodedImg = java.util.Base64.getEncoder().encodeToString(imgData);
+                }
+                a.setImmagine(encodedImg);
+
                 a.setScadenza(LocalDateTime.parse(rs.getString("scadenza")));
                 a.setChiusa(rs.getString("aggiudicatario") != null);
                 a.setRialzoMinimo(rs.getInt("rialzo_minimo"));
 
-                // Recupera le offerte associate all'asta
+                // Retrieve associated offers and articles
                 a.setOfferte(getOffertePerAsta(a.getId()));
-
                 a.setArticoli(getArticoliAsta(a.getId()));
             }
         }
@@ -223,13 +263,13 @@ public class DbManager {
         List<Asta> aste = new ArrayList<>();
         String sql = "SELECT * FROM asta " +
                 "WHERE (nome LIKE ? OR descrizione LIKE ?) " +
-                "AND aggiudicatario IS NULL " + // Seleziona le aste senza aggiudicatario (aperte)
-                "AND scadenza > ?"; // Aste con scadenza futura
+                "AND aggiudicatario IS NULL " +
+                "AND scadenza > ?";
 
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, "%" + parolaChiave + "%"); // Ricerca nel nome
-            ps.setString(2, "%" + parolaChiave + "%"); // Ricerca nella descrizione
-            ps.setObject(3, now); // La data e ora attuali per confrontare la scadenza
+            ps.setString(1, "%" + parolaChiave + "%");
+            ps.setString(2, "%" + parolaChiave + "%");
+            ps.setObject(3, now);
 
             ResultSet rs = ps.executeQuery();
 
@@ -238,12 +278,19 @@ public class DbManager {
                 a.setId(rs.getInt("id"));
                 a.setNome(rs.getString("nome"));
                 a.setDescrizione(rs.getString("descrizione"));
-                a.setImmagine(rs.getString("immagine"));
+
+                // Handle image BLOB as Base64
+                byte[] imgData = rs.getBytes("immagine");
+                String encodedImg = null;
+                if (imgData != null && imgData.length > 0) {
+                    encodedImg = java.util.Base64.getEncoder().encodeToString(imgData);
+                }
+                a.setImmagine(encodedImg);
+
                 a.setScadenza(LocalDateTime.parse(rs.getString("scadenza")));
                 a.setRialzoMinimo(rs.getInt("rialzo_minimo"));
                 a.setChiusa(rs.getString("aggiudicatario") != null);
 
-                // Recupera gli articoli e le offerte per l'asta
                 a.setArticoli(getArticoliAsta(a.getId()));
                 a.setOfferte(getOffertePerAsta(a.getId()));
 
@@ -258,7 +305,7 @@ public class DbManager {
         String sql = "SELECT * FROM asta WHERE aggiudicatario = ? AND aggiudicatario IS NOT NULL";
 
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, username); // Imposta il parametro username nella query
+            ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -270,12 +317,20 @@ public class DbManager {
 
                 a.setNome(rs.getString("nome"));
                 a.setDescrizione(rs.getString("descrizione"));
-                a.setImmagine(rs.getString("immagine"));
+
+                // Handle image BLOB as Base64
+                byte[] imgData = rs.getBytes("immagine");
+                String encodedImg = null;
+                if (imgData != null && imgData.length > 0) {
+                    encodedImg = java.util.Base64.getEncoder().encodeToString(imgData);
+                }
+                a.setImmagine(encodedImg);
+
                 a.setScadenza(LocalDateTime.parse(rs.getString("scadenza")));
                 a.setRialzoMinimo(rs.getInt("rialzo_minimo"));
-                a.setChiusa(true); // L'asta è chiusa (vinta)
-                a.setArticoli(getArticoliAsta(a.getId())); // Ottieni gli articoli per l'asta
-                a.setOfferte(Arrays.asList(offerte.get(0), offerte.get(offerte.size() - 1))); // Imposta prima e ultima
+                a.setChiusa(true);
+                a.setArticoli(getArticoliAsta(a.getId()));
+                a.setOfferte(Arrays.asList(offerte.get(0), offerte.get(offerte.size() - 1)));
                 aste.add(a);
             }
         } catch (SQLException e) {
@@ -363,13 +418,18 @@ public class DbManager {
             ResultSet rsArt = psArt.executeQuery();
 
             while (rsArt.next()) {
+                byte[] imgData = rsArt.getBytes("immagine");
+                String encodedImg = null;
+                if (imgData != null && imgData.length > 0) {
+                    encodedImg = java.util.Base64.getEncoder().encodeToString(imgData);
+                }
                 Articolo art = new Articolo(
                         rsArt.getInt("id"),
                         rsArt.getString("nome"),
                         rsArt.getInt("prezzo"),
                         rsArt.getString("venditore"),
                         rsArt.getString("descrizione"),
-                        rsArt.getString("immagine"));
+                        encodedImg);
                 articoliAsta.add(art);
             }
             return articoliAsta;
