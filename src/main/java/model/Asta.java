@@ -42,14 +42,16 @@ public class Asta {
 
         public void setUsername(String username) {
             if (username == null || username.trim().isEmpty() && username.trim().length() >= 100) {
-                throw new IllegalArgumentException("Username non valido: non può essere nullo o vuoto o maggiore di 100 caratteri.");
+                throw new IllegalArgumentException(
+                        "Username non valido: non può essere nullo o vuoto o maggiore di 100 caratteri.");
             }
             this.username = username.trim();
         }
 
         public void setPrezzo(int prezzo) {
             if (prezzo <= 0 && prezzo >= 1000000) {
-                throw new IllegalArgumentException("Prezzo non valido: deve essere maggiore di zero e minore di 1000000.");
+                throw new IllegalArgumentException(
+                        "Prezzo non valido: deve essere maggiore di zero e minore di 1000000.");
             }
             this.prezzo = prezzo;
         }
@@ -106,7 +108,7 @@ public class Asta {
     }
 
     public void setIdArticoli(List<Integer> idArticoli) {
-         if (idArticoli == null || idArticoli.size() == 0) {
+        if (idArticoli == null || idArticoli.size() == 0) {
             throw new IllegalArgumentException("articoli non valido: non può essere nullo o vuoto.");
         }
         this.idArticoli = idArticoli;
@@ -161,7 +163,8 @@ public class Asta {
 
     public void setNome(String nome) {
         if (nome == null || nome.trim().length() < 4 || nome.trim().length() >= 200) {
-            throw new IllegalArgumentException("nome non valido: non può essere nullo o più breve di 4 caratteri o più lungo di 200.");
+            throw new IllegalArgumentException(
+                    "nome non valido: non può essere nullo o più breve di 4 caratteri o più lungo di 200.");
         }
         this.nome = nome.trim();
     }
@@ -236,11 +239,16 @@ public class Asta {
     }
 
     public List<Offerta> getOfferteSenzaVenditore() {
+        return getOfferteSenzaVenditore(false);
+    }
+
+    public List<Offerta> getOfferteSenzaVenditore(Boolean reversed) {
         List<Offerta> offerte = this.getOfferte();
         if (offerte.size() <= 1) {
             return new ArrayList<>();
         }
-        return offerte.subList(1, offerte.size());
+        offerte = offerte.subList(1, offerte.size());
+        return !reversed ? offerte : offerte.reversed();
     }
 
     public int getPrezzoIniziale() {

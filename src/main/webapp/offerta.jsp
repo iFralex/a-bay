@@ -44,7 +44,7 @@
                         <th>Importo</th>
                         <th>Data/Ora</th>
                     </tr>
-                    <c:forEach var="offerta" items="${offerteSenzaVenditoreReversed}">
+                    <c:forEach var="offerta" items="${asta.getOfferteSenzaVenditore(true)}">
                         <tr>
                             <td>${offerta.username}</td>
                             <td>${offerta.prezzo} &euro;</td>

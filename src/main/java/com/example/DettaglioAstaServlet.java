@@ -79,9 +79,6 @@ public class DettaglioAstaServlet extends HttpServlet {
 
         // Inoltra i dati alla JSP
         request.setAttribute("asta", asta);
-        List<Offerta> offerte = asta.getOfferteSenzaVenditore();
-        Collections.reverse(offerte);
-        request.setAttribute("offerteSenzaVenditoreReversed", offerte);
         if (errors.size() > 0)
             request.setAttribute("errors", errors);
         request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request, response);
@@ -128,7 +125,8 @@ public class DettaglioAstaServlet extends HttpServlet {
         if (!errors.isEmpty())
             request.setAttribute("errors", errors);
 
-        //request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request, response);
+        // request.getRequestDispatcher("/dettaglioAsta.jsp").forward(request,
+        // response);
         response.sendRedirect("dettaglioAsta?id=" + astaId);
 
     }

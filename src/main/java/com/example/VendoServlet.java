@@ -46,28 +46,26 @@ public class VendoServlet extends HttpServlet {
         List<String> errors = new ArrayList<>();
 
         try {
-            List<Articolo> articoliUtente = DbManager.getArticoliDisponibiliPerUtente(utente.getUsername());
-            request.setAttribute("articoliUtente", articoliUtente);
-        } catch (IllegalArgumentException e) {
-            errors.add(e.getMessage());
-        } catch (SQLException e) {
-            errors.add("Errore nel Database:" + e.getMessage());
-        }
+            try {
+                List<Articolo> articoliUtente = DbManager.getArticoliDisponibiliPerUtente(utente.getUsername());
+                request.setAttribute("articoliUtente", articoliUtente);
+            } catch (IllegalArgumentException e) {
+                errors.add(e.getMessage());
+            }
 
-        try {
-            List<Asta> asteAperte = DbManager.getAsteUtente(utente.getUsername(), false);
-            request.setAttribute("asteAperte", asteAperte);
-        } catch (IllegalArgumentException e) {
-            errors.add(e.getMessage());
-        } catch (SQLException e) {
-            errors.add("Errore nel Database:" + e.getMessage());
-        }
+            try {
+                List<Asta> asteAperte = DbManager.getAsteUtente(utente.getUsername(), false);
+                request.setAttribute("asteAperte", asteAperte);
+            } catch (IllegalArgumentException e) {
+                errors.add(e.getMessage());
+            }
 
-        try {
-            List<Asta> asteChiuse = DbManager.getAsteUtente(utente.getUsername(), true);
-            request.setAttribute("asteChiuse", asteChiuse);
-        } catch (IllegalArgumentException e) {
-            errors.add(e.getMessage());
+            try {
+                List<Asta> asteChiuse = DbManager.getAsteUtente(utente.getUsername(), true);
+                request.setAttribute("asteChiuse", asteChiuse);
+            } catch (IllegalArgumentException e) {
+                errors.add(e.getMessage());
+            }
         } catch (SQLException e) {
             errors.add("Errore nel Database:" + e.getMessage());
         }
@@ -76,9 +74,8 @@ public class VendoServlet extends HttpServlet {
         if (attr instanceof List)
             errors.addAll((List<String>) attr);
 
-        if (!errors.isEmpty()) {
+        if (!errors.isEmpty())
             request.setAttribute("errors", errors);
-        }
 
         request.getRequestDispatcher("/vendo.jsp").forward(request, response);
     }

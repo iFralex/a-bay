@@ -52,9 +52,6 @@ public class OffertaServlet extends HttpServlet {
                 return;
             }
             request.setAttribute("asta", asta);
-            List<Offerta> offerte = asta.getOfferteSenzaVenditore();
-            Collections.reverse(offerte);
-            request.setAttribute("offerteSenzaVenditoreReversed", offerte);
         } catch (IllegalArgumentException e) {
             request.setAttribute("errors", List.of(e.getMessage()));
         } catch (SQLException e) {
