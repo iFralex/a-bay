@@ -14,15 +14,21 @@
     <c:choose>
         <c:when test="${not empty asta}">
             <jsp:useBean id="asta" scope="request" type="model.Asta"/>
-            <div class="auction-header">
-                <h1>Dettaglio Asta #${asta.id}: ${asta.nome}</h1>
-            </div>
+            <h1>Dettaglio Asta #${asta.id}: ${asta.nome}</h1>
 
             <div class="auction-details">
+                <c:if test="${not empty asta.immagine}">
+                    <img src="data:image/jpeg;base64,${asta.immagine}" alt="Immagine asta" width="120" height="120" style="object-fit: cover; border-radius: 8px; margin-bottom: 10px;"/>
+                </c:if>
                 <p><strong>Articoli:</strong></p>
                 <ul>
                     <c:forEach var="articolo" items="${asta.articoli}">
-                        <li>${articolo.nome} - ${articolo.prezzo} &euro;</li>
+                        <li style="display: flex; align-items: center; gap: 10px;">
+                            <c:if test="${not empty articolo.immagine}">
+                                <img src="data:image/jpeg;base64,${articolo.immagine}" alt="${articolo.nome}" width="50" height="50" style="object-fit: cover; border-radius: 4px;"/>
+                            </c:if>
+                                ${articolo.nome} - ${articolo.prezzo} &euro;
+                        </li>
                     </c:forEach>
                 </ul>
                 <p><strong>Venditore:</strong> ${asta.venditore}</p>
@@ -62,7 +68,7 @@
                     <th>Importo</th>
                     <th>Data/Ora</th>
                 </tr>
-                <c:forEach var="offerta" items="${asta.offerteSenzaVenditore}">
+                <c:forEach var="offerta" items="${offerteSenzaVenditoreReversed}">
                     <tr>
                         <td>${offerta.username}</td>
                         <td>${offerta.prezzo} &euro;</td>

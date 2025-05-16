@@ -13,6 +13,7 @@ import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/offerta")
@@ -51,6 +52,9 @@ public class OffertaServlet extends HttpServlet {
                 return;
             }
             request.setAttribute("asta", asta);
+            List<Offerta> offerte = asta.getOfferteSenzaVenditore();
+            Collections.reverse(offerte);
+            request.setAttribute("offerteSenzaVenditoreReversed", offerte);
         } catch (IllegalArgumentException e) {
             request.setAttribute("errors", List.of(e.getMessage()));
         } catch (SQLException e) {

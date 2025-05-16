@@ -18,14 +18,19 @@
     <h2>Aste aperte trovate</h2>
     <ul>
         <c:forEach var="asta" items="${asteAperte}">
-            <li>
-                <a href="offerta?id=${asta.getId()}">
-                    Asta #${asta.id}: ${asta.nome} - Scade tra ${asta.tempoRimasto}
-                    <br/>Articoli:
-                    <c:forEach var="articolo" items="${asta.getArticoli()}" varStatus="status">
-                        ${articolo.getNome()}<c:if test="${!status.last}">, </c:if>
-                    </c:forEach>
-                </a>
+            <li style="display: flex; align-items: flex-start; gap: 12px;">
+                <c:if test="${not empty asta.immagine}">
+                    <img src="data:image/jpeg;base64,${asta.immagine}" alt="Immagine asta" width="60" height="60" style="object-fit: cover; border-radius: 6px;"/>
+                </c:if>
+                <div>
+                    <a href="offerta?id=${asta.getId()}">
+                        Asta #${asta.id}: ${asta.nome} - Scade tra ${asta.tempoRimasto}
+                        <br/>Articoli:
+                        <c:forEach var="articolo" items="${asta.getArticoli()}" varStatus="status">
+                            ${articolo.getNome()}<c:if test="${!status.last}">, </c:if>
+                        </c:forEach>
+                    </a>
+                </div>
             </li>
         </c:forEach>
     </ul>

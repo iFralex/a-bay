@@ -40,6 +40,9 @@
                 <c:forEach var="a" items="${asteAperte}">
                     <li>
                         <a href="dettaglioAsta?id=${a.id}">
+                            <c:if test="${not empty a.immagine}">
+                                <img src="data:image/jpeg;base64,${a.immagine}" alt="${a.nome}" width="50" style="margin-right: 10px; vertical-align: middle;"/>
+                            </c:if>
                                 ${a.nome} –
                                 ${a.descrizione} –
                             Articoli: [
@@ -63,6 +66,9 @@
                 <c:forEach var="a" items="${asteChiuse}">
                     <li>
                         <a href="dettaglioAsta?id=${a.id}">
+                            <c:if test="${not empty a.immagine}">
+                                <img src="data:image/jpeg;base64,${a.immagine}" alt="${a.nome}" width="50" style="margin-right: 10px; vertical-align: middle;"/>
+                            </c:if>
                                 ${a.nome} –
                             Articoli: [
                             <c:forEach var="art" items="${a.articoli}">
@@ -81,7 +87,7 @@
         <!-- Left column - Nuovo Articolo -->
         <div class="column">
             <h2>Nuovo Articolo</h2>
-            <form action="vendo" method="post">
+            <form action="vendo" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="createArticolo" />
                 <div class="form-group">
                     <label for="nome">Nome:</label>
@@ -92,12 +98,12 @@
                     <input type="text" id="descrizione" name="descrizione" required>
                 </div>
                 <div class="form-group">
-                    <label for="immagine">Immagine URL:</label>
-                    <input type="text" id="immagine" name="immagine" required>
+                    <label for="immagine">Immagine:</label>
+                    <input type="file" id="immagine" name="immagine" accept="image/*" required>
                 </div>
                 <div class="form-group">
                     <label for="prezzo">Prezzo (€):</label>
-                    <input type="number" id="prezzo" name="prezzo" step="0.01" required>
+                    <input type="number" id="prezzo" name="prezzo" step="0.01" min="0" required>
                 </div>
                 <button type="submit" class="main-action" style="width:100%; margin:10px 0;">Aggiungi Articolo</button>
             </form>
@@ -106,7 +112,7 @@
         <!-- Right column - Nuova Asta -->
         <div class="column">
             <h2>Nuova Asta</h2>
-            <form action="vendo" method="post">
+            <form action="vendo" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="createAsta" />
                 <div class="form-group">
                     <p>Seleziona uno o più articoli:</p>
@@ -126,8 +132,8 @@
                     <input type="text" id="asta-descrizione" name="descrizione" required>
                 </div>
                 <div class="form-group">
-                    <label for="asta-immagine">Immagine URL:</label>
-                    <input type="text" id="asta-immagine" name="immagine" required>
+                    <label for="asta-immagine">Immagine:</label>
+                    <input type="file" id="asta-immagine" name="immagine" accept="image/*" required>
                 </div>
                 <div class="form-group">
                     <label for="rialzo">Rialzo minimo (€):</label>

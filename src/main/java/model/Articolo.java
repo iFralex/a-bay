@@ -61,10 +61,7 @@ public class Articolo {
     }
 
     public void setImmagine(String immagine) {
-        if (immagine != null && immagine.trim().length() >= 150) {
-            throw new IllegalArgumentException("immagine non valido: non può essere più lungo di 150 caratteri.");
-        }
-        this.immagine = immagine.trim();
+        this.immagine = immagine;
     }
 
     public int getPrezzo() {
