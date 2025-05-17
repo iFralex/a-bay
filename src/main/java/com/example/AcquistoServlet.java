@@ -24,7 +24,7 @@ public class AcquistoServlet extends HttpServlet {
         LocalDateTime now = LocalDateTime.now();
 
         List<String> errors = new ArrayList<>();
-        
+
         // Recupera le aste aperte che corrispondono alla parola chiave
         List<Asta> asteAperte = new ArrayList<>();
         if (parolaChiave != null && !parolaChiave.trim().isEmpty()) {
@@ -59,8 +59,8 @@ public class AcquistoServlet extends HttpServlet {
         request.setAttribute("asteAperte", asteAperte);
         request.setAttribute("asteAggiudicate", asteAggiudicate);
         request.setAttribute("parolaChiave", parolaChiave);
-if (errors.size() > 0)
-        request.setAttribute("errors", errors);
+        if (errors.size() > 0)
+            request.setAttribute("errors", errors);
 
         request.getRequestDispatcher("/acquisto.jsp").forward(request, response);
     }

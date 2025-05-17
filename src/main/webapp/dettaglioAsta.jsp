@@ -9,87 +9,104 @@
 <body>
 <jsp:include page="/templates/navbar.jsp" />
 <jsp:include page="templates/messaggi.jsp" />
-<div class="auction-container">
-    
+
+<main class="auction-detail">
     <c:choose>
         <c:when test="${not empty asta}">
             <jsp:useBean id="asta" scope="request" type="model.Asta"/>
-            <h1>Dettaglio Asta #${asta.id}: ${asta.nome}</h1>
 
-            <div class="auction-details">
-                <c:if test="${not empty asta.immagine}">
-                    <img src="data:image/jpeg;base64,${asta.immagine}" alt="Immagine asta" width="120" height="120" style="object-fit: cover; border-radius: 8px; margin-bottom: 10px;"/>
-                </c:if>
-                <p><strong>Articoli:</strong></p>
-                <ul>
-                    <c:forEach var="articolo" items="${asta.articoli}">
-                        <li style="display: flex; align-items: center; gap: 10px;">
-                            <c:if test="${not empty articolo.immagine}">
-                                <img src="data:image/jpeg;base64,${articolo.immagine}" alt="${articolo.nome}" width="50" height="50" style="object-fit: cover; border-radius: 4px;"/>
-                            </c:if>
-                                ${articolo.nome} - ${articolo.prezzo} &euro;
-                        </li>
-                    </c:forEach>
-                </ul>
-                <p><strong>Venditore:</strong> ${asta.venditore}</p>
-                <p><strong>Prezzo iniziale:</strong> ${asta.prezzoIniziale} &euro;</p>
-                <p><strong>Offerta Massima:</strong>
+            <h1 class="auction-title">Asta #${asta.id}: ${asta.nome}</h1>
+            <c:if test="${not empty asta.immagine}">
+                <img class="auction-image" src="data:image/jpeg;base64,${asta.immagine}" alt="Immagine asta" />
+            </c:if>
+            <p class="auction-description">${asta.descrizione}</p>
+
+            <div class="info-grid">
+                <div><strong>Venditore:</strong> ${asta.venditore}</div>
+                <div><strong>Prezzo iniziale:</strong> €${asta.prezzoIniziale}</div>
+                <div>
+                    <strong>Offerta Massima:</strong>
                     <c:choose>
                         <c:when test="${asta.offertaMassima != null}">
-                            ${asta.offertaMassima.username} | ${asta.offertaMassima.prezzo} &euro;
+                            ${asta.offertaMassima.username} | €${asta.offertaMassima.prezzo}
                         </c:when>
-                        <c:otherwise>
-                            -- | -- &euro;
-                        </c:otherwise>
+                        <c:otherwise>-- | --</c:otherwise>
                     </c:choose>
-                </p>
-                <p><strong>Rialzo minimo:</strong> ${asta.rialzoMinimo} &euro;</p>
-                <p><strong>Scadenza:</strong> ${asta.formattedScadenza}</p>
-                <p><strong>Stato:</strong> <span class="status-${asta.chiusa ? 'closed' : 'open'}">
-            <c:choose>
-                <c:when test="${asta.chiusa}">Chiusa</c:when>
-                <c:otherwise>Aperta</c:otherwise>
-            </c:choose>
-        </span></p>
+                </div>
+                <div><strong>Rialzo minimo:</strong> €${asta.rialzoMinimo}</div>
+                <div><strong>Scadenza:</strong> ${asta.formattedScadenza}</div>
+                <div>
+                    <strong>Stato:</strong> 
+                    <span class="badge ${asta.chiusa ? 'closed' : 'open'}">
+                        <c:choose>
+                            <c:when test="${asta.chiusa}">Chiusa</c:when>
+                            <c:otherwise>Aperta</c:otherwise>
+                        </c:choose>
+                    </span>
+                </div>
             </div>
 
-            <c:if test="${vincitore != null}">
-                <div class="winner-box">
-                    <p><strong>Vincitore:</strong> ${vincitore.username} | ${vincitore.nome} ${vincitore.cognome}</p>
-                    <p><strong>Prezzo finale:</strong> ${asta.offertaVincitrice.prezzo} &euro;</p>
-                    <p><strong>Indirizzo spedizione:</strong> ${vincitore != null ? vincitore.indirizzo : 'Non disponibile'}</p>
+            <section class="section">
+                <div class="section-header">
+                    <h2>Articoli inclusi</h2>
                 </div>
+                <div class="scroll-row">
+                    <c:forEach var="articolo" items="${asta.articoli}">
+                        <div class="scroll-item">
+                            <c:set var="articolo" value="${articolo}" scope="request" />
+                            <jsp:include page="templates/articoloCard.jsp" />
+                        </div>
+                    </c:forEach>
+                </div>
+            </section>
+
+            <c:if test="${vincitore != null}">
+                <section class="winner-section">
+                    <h3>Vincitore</h3>
+                    <p><strong>Username:</strong> ${vincitore.username}</p>
+                    <p><strong>Nome:</strong> ${vincitore.nome} ${vincitore.cognome}</p>
+                    <p><strong>Prezzo finale:</strong> €${asta.offertaVincitrice.prezzo}</p>
+                    <p><strong>Indirizzo:</strong> ${vincitore.indirizzo}</p>
+                    <p><strong>Costo spedizione:</strong> €5</p>
+                </section>
             </c:if>
 
-            <h2>Offerte</h2>
-            <table class="auction-table">
-                <tr>
-                    <th>Utente</th>
-                    <th>Importo</th>
-                    <th>Data/Ora</th>
-                </tr>
-                <c:forEach var="offerta" items="${asta.getOfferteSenzaVenditore(true)}">
-                    <tr>
-                        <td>${offerta.username}</td>
-                        <td>${offerta.prezzo} &euro;</td>
-                        <td>${offerta.formattedDate}</td>
-                    </tr>
-                </c:forEach>
-            </table>
+            <section class="offerte-section">
+                <div class="section-header">
+                    <h2>Offerte ricevute</h2>
+                </div>
+                <table class="offerte-table">
+                    <thead>
+                        <tr>
+                            <th>Utente</th>
+                            <th>Importo</th>
+                            <th>Data/Ora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="offerta" items="${asta.getOfferteSenzaVenditore(true)}">
+                            <tr>
+                                <td>${offerta.username}</td>
+                                <td>€${offerta.prezzo}</td>
+                                <td>${offerta.formattedDate}</td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </section>
 
             <c:if test="${!asta.chiusa}">
-                <form action="dettaglioAsta" method="post" class="close-auction-form">
+                <form class="chiudi-asta-form" method="post" action="dettaglioAsta">
                     <input type="hidden" name="id" value="${asta.id}" />
                     <input type="hidden" name="aggiudicatario" value="${asta.offertaMassima != null ? asta.offertaMassima.username : asta.venditore}" />
-                    <input type="submit" value="Chiudi Asta" />
+                    <button type="submit">Chiudi Asta</button>
                 </form>
             </c:if>
         </c:when>
 
         <c:otherwise>
-            <p>Asta non visualizzabile o non trovata.</p>
+            <p class="not-found">Asta non trovata o non visualizzabile.</p>
         </c:otherwise>
     </c:choose>
-</div>
+</main>
 </body>
-</html>

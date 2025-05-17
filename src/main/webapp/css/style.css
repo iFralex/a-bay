@@ -1,195 +1,289 @@
-:root {
-    --primary: #007bff;
-    --primary-dark: #0056b3;
-    --error-bg: #f8d7da;
-    --error-color: #842029;
-    --success-bg: rgb(116, 203, 116);
-    --success-color: rgb(27, 78, 0);
+/* Layout principale */
+.auction-dashboard {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+.page-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: #333;
     text-align: center;
 }
 
-h1, h2 {
+/* Sezioni */
+.section {
+    margin-bottom: 3rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    color: #444;
+}
+
+/* Cards griglia */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Cards contenuto */
+.card {
+    background: white;
+    padding: 0.2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Badge stato */
+.badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+}
+
+.badge.open {
+    background: #28a745;
+}
+
+.badge.closed {
+    background: #dc3545;
+}
+
+/* Sezione Forms */
+.forms-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.form-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+
+.form-card h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
     color: #333;
 }
 
-/* Message boxes */
-.error-message, .error-box, .success-message, .success-box {
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #f5c2c7;
+.form-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
-.error-message, .error-box {
-    background-color: var(--error-bg);
-    color: var(--error-color);
-}
-
-.success-message, .success-box {
-    background-color: var(--success-bg);
-    color: var(--success-color);
-}
-
-/* Forms */
-form {
-    margin: 20px auto;
-    display: inline-block;
-}
-
-input[type="text"], input[type="password"] {
-    padding: 8px;
-    border-radius: 4px;
+.form-card input,
+.form-card textarea {
+    padding: 0.75rem 1rem;
     border: 1px solid #ccc;
-    width: 100%;
-    box-sizing: border-box;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 0.7rem;
 }
 
-/* Buttons */
-button, input[type="submit"], .main-action {
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover, input[type="submit"]:hover, .main-action:hover {
-    background-color: var(--primary-dark);
-}
-
-button, input[type="submit"] {
-    padding: 8px 16px;
+.form-card textarea {
+    min-height: 100px;
+    resize: vertical;
 }
 
 .main-action {
-    display: inline-block;
-    margin: 20px 15px;
-    padding: 12px 28px;
-    font-size: 1.1em;
-    font-weight: 500;
-    text-decoration: none;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background-color: #007bff;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
 }
 
-/* Links and Lists */
-ul {
-    list-style: none;
-    padding: 0;
+.main-action:hover {
+    background-color: #0056b3;
 }
 
-li {
-    background: #fff;
-    margin: 10px auto;
-    padding: 15px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    max-width: 600px;
-    text-align: left;
+/* Scroll articoli */
+.scroll-row {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
 }
 
-a {
-    color: var(--primary);
-    text-decoration: none;
+.scroll-item {
+    flex: 0 0 auto;
 }
 
-a:hover {
-    text-decoration: underline;
+.scroll-item input[type="checkbox"] {
+    display: none;
 }
 
-/* Containers */
-.home-container, .auction-container {
-    background: #fff;
-    margin: 40px auto;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+.scroll-item label {
+    display: block;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    transition: border 0.2s;
 }
 
-.home-container {
-    max-width: 500px;
-    margin: 60px auto;
+.scroll-item input[type="checkbox"]:checked + label {
+    border: 2px solid #007bff;
+}
+
+/* Not found */
+.not-found {
     text-align: center;
+    margin-top: 3rem;
+    color: #999;
+    font-size: 1.2rem;
 }
 
-.auction-container {
-    max-width: 700px;
-    text-align: left;
+.auction-detail {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', sans-serif;
 }
 
-/* Auction page specific styles */
-.form-group {
-    margin-bottom: 15px;
-    text-align: left;
-}
-
-.auction-header h1 {
-    color: var(--primary);
-    margin-bottom: 20px;
-}
-
-.winner-box {
-    background: #e6ffe6;
-    border: 1px solid #b2f2b2;
-    border-radius: 6px;
-    padding: 15px;
-    margin: 20px 0;
-}
-
-.status-open {
-    color: #28a745;
+.auction-title {
+    font-size: 2.5rem;
     font-weight: bold;
+    color: #333;
+    margin-bottom: 1.5rem;
 }
 
-.status-closed {
-    color: #dc3545;
-    font-weight: bold;
+.auction-description {
+    font-size: 1.1rem;
+    color: #555;
+    margin-top: 1rem;
 }
 
-.auction-table {
+.auction-image {
     width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    background: #fafbfc;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-top: 1rem;
 }
 
-.auction-table th, .auction-table td {
-    padding: 10px 12px;
-    border: 1px solid #e1e4e8;
-    text-align: center;
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
 }
 
-.auction-table th {
-    background: #f0f4f8;
+.info-grid div {
+    background: white;
+    padding: 0.3rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    font-size: 0.95rem;
     color: #333;
 }
 
-.close-auction-form {
-    margin-top: 25px;
-    text-align: right;
+.winner-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    margin-top: 3rem;
 }
 
-.message-box {
-    margin: 20px auto;
-    padding: 15px;
-    max-width: 600px;
-    border-radius: 5px;
-    font-family: sans-serif;
+.winner-section h3 {
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 1rem;
 }
 
-.error-box {
-    background-color: #ffe6e6;
-    color: #a94442;
-    border: 1px solid #f5c6cb;
+.offerte-section {
+    margin-top: 3rem;
 }
 
-.success-box {
-    background-color: #e6ffea;
-    color: #2d7a36;
-    border: 1px solid #b1e2c2;
+.offerte-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: white;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.offerte-table th, .offerte-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.offerte-table th {
+    background: #f0f0f0;
+    font-weight: bold;
+}
+
+.offerte-table tr:last-child td {
+    border-bottom: none;
+}
+
+.chiudi-asta-form {
+    margin-top: 2rem;
+}
+
+.chiudi-asta-form button {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.chiudi-asta-form button:hover {
+    background-color: #c82333;
 }

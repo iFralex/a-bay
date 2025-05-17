@@ -8,24 +8,29 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<jsp:include page="/templates/navbar.jsp" />
-<jsp:include page="templates/messaggi.jsp" />
-<div class="home-container">
-    <h1>Login</h1>
+  <jsp:include page="/templates/navbar.jsp" />
+  <jsp:include page="templates/messaggi.jsp" />
 
-    <form action="${pageContext.request.contextPath}/login" method="post">
+  <div class="auction-dashboard">
+    <h1 class="page-title">Login</h1>
+
+    <section class="form-card">
+      <form action="${pageContext.request.contextPath}/login" method="post" class="login-form">
         <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
         </div>
 
         <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
         </div>
 
-        <button type="submit" class="main-action" style="width:100%; margin:10px 0;">Accedi</button>
-    </form>
-</div>
+        <button type="submit" class="main-action" style="width: 100%; margin-top: 1rem;">
+          Accedi
+        </button>
+      </form>
+    </section>
+  </div>
 </body>
 </html>
