@@ -44,6 +44,8 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (utente != null) {
+
+            //verifica con l'hash della password
             boolean isPasswordValid = PasswordUtils.verifyPassword(password, utente.getPasswordHash());
 
             if (isPasswordValid) {

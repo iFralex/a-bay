@@ -3,7 +3,7 @@ package com.example;
 import model.Asta;
 import model.Asta.Offerta;
 import model.Utente;
-import utils.DbManager;;
+import utils.DbManager;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
