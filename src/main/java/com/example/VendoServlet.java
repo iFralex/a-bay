@@ -23,6 +23,8 @@ public class VendoServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
+
+        //propaga gli errori e i successi alla pagina
         if (session != null) {
             Object errors = session.getAttribute("errors");
             if (errors != null) {
@@ -38,6 +40,7 @@ public class VendoServlet extends HttpServlet {
 
         Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
 
+        //se utente e' null, reindirizza alla pagina di login
         if (utente == null) {
             response.sendRedirect("login.jsp");
             return;
@@ -45,6 +48,7 @@ public class VendoServlet extends HttpServlet {
 
         List<String> errors = new ArrayList<>();
 
+        //setta gli attributi per la pagina
         try {
             try {
                 List<Articolo> articoliUtente = DbManager.getArticoliDisponibiliPerUtente(utente.getUsername());
@@ -87,11 +91,13 @@ public class VendoServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
 
+        //se utente e' null, reindirizza alla pagina di login
         if (utente == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
+        // log per il debug
         System.out.println("Parameters:");
         request.getParameterMap().forEach((k, v) -> System.out.println(k + " = " + Arrays.toString(v)));
 

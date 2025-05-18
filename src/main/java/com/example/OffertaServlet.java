@@ -23,7 +23,7 @@ public class OffertaServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        // Move errors/success from session to request if present (for PRG)
+        //propagazione degli errori e dei successi alla pagina
         if (session != null) {
             Object errors = session.getAttribute("errors");
             if (errors != null) {
@@ -68,6 +68,7 @@ public class OffertaServlet extends HttpServlet {
 
         Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
 
+        //se utente e' null, reindirizza alla pagina di login
         if (utente == null) {
             response.sendRedirect("login.jsp");
             return;
@@ -89,6 +90,7 @@ public class OffertaServlet extends HttpServlet {
 
         List<String> errors = new ArrayList<>();
         request.setAttribute("asta", asta);
+        //se l'asta non ha offerte, il prezzo minimo e' il prezzo iniziale + rialzo
         int prezzoMinimo = (max != null ? max.getPrezzo() : asta.getPrezzoIniziale()) + asta.getRialzoMinimo();
         if (prezzoOfferto >= prezzoMinimo) {
             try {
@@ -103,12 +105,13 @@ public class OffertaServlet extends HttpServlet {
         } else
             errors.add("L'offerta deve essere maggiore di " + prezzoMinimo + " €");
 
+        //propaga il successo o l'errore alla pagina
         if (errors.size() > 0)
             session.setAttribute("errors", errors);
         else
             session.setAttribute("success", "Offerta registrata!");
 
-        // Always redirect to avoid form resubmission
+        // redirect per evitare il refresh della pagina
         response.sendRedirect("offerta?id=" + astaId);
     }
 }

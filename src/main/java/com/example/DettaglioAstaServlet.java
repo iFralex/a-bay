@@ -23,11 +23,13 @@ public class DettaglioAstaServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         Utente utente = (session != null) ? (Utente) session.getAttribute("user") : null;
 
+        // Se l'utente non è autenticato, reindirizza alla pagina di login
         if (utente == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
+        // Propagazione degli errori e dei successi alla request
         if (session.getAttribute("errors") != null) {
             request.setAttribute("errors", session.getAttribute("errors"));
             session.removeAttribute("errors");
@@ -88,6 +90,7 @@ public class DettaglioAstaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        //dopost per chiudere asta
         int astaId;
         try {
             astaId = Integer.parseInt(request.getParameter("id"));
