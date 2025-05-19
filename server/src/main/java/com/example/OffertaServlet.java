@@ -1,4 +1,4 @@
-package com.example;
+package com.abay;
 
 import model.Asta;
 import model.Utente;

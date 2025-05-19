@@ -13,7 +13,7 @@
     </repositories>
 
 
-    <groupId>com.example</groupId>
+    <groupId>com.abay</groupId>
     <artifactId>TIW</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
