@@ -131,6 +131,9 @@ public class VendoServlet extends HttpServlet {
                 articoliIds = new String[0];
 
             try {
+                LocalDateTime scadenza = LocalDateTime.parse(request.getParameter("scadenza").replace(" ", "T"));
+                if (scadenza.isBefore(LocalDateTime.now()))
+                    throw new Exception("La data deve essere futura.");
                 List<Integer> idArticoli = new ArrayList<>();
                 int prezzoIniziale = 0;
 
@@ -154,7 +157,7 @@ public class VendoServlet extends HttpServlet {
                 asta.setIdArticoli(idArticoli);
                 asta.newOfferta(utente.getUsername(), prezzoIniziale);
                 asta.setRialzoMinimo(Integer.parseInt(request.getParameter("rialzo")));
-                asta.setScadenza(LocalDateTime.parse(request.getParameter("scadenza").replace(" ", "T")));
+                asta.setScadenza(scadenza);
                 asta.setNome(request.getParameter("nome"));
                 asta.setDescrizione(request.getParameter("descrizione"));
                 asta.setImmagine(encodedImg);

@@ -300,7 +300,7 @@ public class DbManager {
         return aste;
     }
 
-    public static List<Asta> getAsteVinteDaUtente(String username) {
+    public static List<Asta> getAsteVinteDaUtente(String username) throws SQLException {
         List<Asta> aste = new ArrayList<>();
         String sql = "SELECT * FROM asta WHERE aggiudicatario = ? AND aggiudicatario IS NOT NULL";
 
@@ -333,10 +333,7 @@ public class DbManager {
                 a.setOfferte(Arrays.asList(offerte.get(0), offerte.get(offerte.size() - 1)));
                 aste.add(a);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-
         return aste;
     }
 

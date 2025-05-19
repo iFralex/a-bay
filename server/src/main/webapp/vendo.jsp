@@ -45,53 +45,51 @@
 
     <!-- Sezione Forms -->
     <div class="section forms-section">
-        <div class="form-card">
-            <h2>Nuovo Articolo</h2>
-            <form action="vendo" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="createArticolo" />
-                <label>Nome</label>
-                <input type="text" name="nome" required />
-                <label>Descrizione</label>
-                <textarea name="descrizione" required></textarea>
-                <label>Immagine</label>
-                <input type="file" name="immagine" accept="image/*" required />
-                <label>Prezzo (€)</label>
-                <input type="number" name="prezzo" step="0.01" min="0" required />
-                <button type="submit" class="main-action">Aggiungi Articolo</button>
-            </form>
-        </div>
-
-        <div class="form-card">
-            <h2>Nuova Asta</h2>
-            <form action="vendo" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="createAsta" />
-                <label>Articoli da includere</label>
-                <div class="scroll-row">
-                    <c:forEach var="art" items="${articoliUtente}">
-                        <div class="scroll-item">
-                            <input type="checkbox" name="articoliId" id="art-${art.id}" value="${art.id}" />
-                            <label for="art-${art.id}">
-                                <c:set var="articolo" value="${art}" scope="request" />
-                                <jsp:include page="templates/articoloCard.jsp" />
-                            </label>
-                        </div>
-                    </c:forEach>
-                </div>
-
-                <label>Nome</label>
-                <input type="text" name="nome" required />
-                <label>Descrizione</label>
-                <textarea name="descrizione" required></textarea>
-                <label>Immagine</label>
-                <input type="file" name="immagine" accept="image/*" required />
-                <label>Rialzo minimo (€)</label>
-                <input type="number" name="rialzo" min="1" required />
-                <label>Scadenza</label>
-                <input type="datetime-local" name="scadenza" required />
-                <button type="submit" class="main-action">Crea Asta</button>
-            </form>
-        </div>
-    </div>
+ <div class="form-card">
+<h2>Nuovo Articolo</h2>
+<form action="vendo" method="post" enctype="multipart/form-data">
+<input type="hidden" name="action" value="createArticolo" />
+<label>Nome</label>
+<input type="text" name="nome" required minlength="1" maxlength="1000" />
+<label>Descrizione</label>
+<textarea name="descrizione" required minlength="1" maxlength="1000"></textarea>
+<label>Immagine</label>
+<input type="file" name="immagine" accept="image/*" required />
+<label>Prezzo (€)</label>
+<input type="number" name="prezzo" step="0.01" min="0" max="5000000" required />
+<button type="submit" class="main-action">Aggiungi Articolo</button>
+</form>
+</div>
+<div class="form-card">
+<h2>Nuova Asta</h2>
+<form action="vendo" method="post" enctype="multipart/form-data">
+<input type="hidden" name="action" value="createAsta" />
+<label>Articoli da includere</label>
+<div class="scroll-row">
+<c:forEach var="art" items="${articoliUtente}">
+<div class="scroll-item">
+<input type="checkbox" name="articoliId" id="art-${art.id}" value="${art.id}" />
+<label for="art-${art.id}">
+<c:set var="articolo" value="${art}" scope="request" />
+<jsp:include page="templates/articoloCard.jsp" />
+</label>
+</div>
+</c:forEach>
+</div>
+<label>Nome</label>
+<input type="text" name="nome" required minlength="1" maxlength="1000" />
+<label>Descrizione</label>
+<textarea name="descrizione" required minlength="1" maxlength="1000"></textarea>
+<label>Immagine</label>
+<input type="file" name="immagine" accept="image/*" required />
+<label>Rialzo minimo (€)</label>
+<input type="number" name="rialzo" min="0" max="5000000" required />
+<label>Scadenza</label>
+<input type="datetime-local" name="scadenza" required />
+<button type="submit" class="main-action">Crea Asta</button>
+</form>
+</div>
+</div>
 </div>
 </body>
 </html>

@@ -52,6 +52,8 @@ public class AcquistoServlet extends HttpServlet {
                     asteAggiudicate = DbManager.getAsteVinteDaUtente(utente.getUsername());
                 } catch (IllegalArgumentException e) {
                     errors.add(e.getMessage());
+                } catch (SQLException e) {
+                    errors.add("Errore nel database: " + e.getMessage());
                 }
             }
         }
