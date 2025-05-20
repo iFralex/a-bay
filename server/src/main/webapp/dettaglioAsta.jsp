@@ -11,9 +11,9 @@
 <jsp:include page="templates/messaggi.jsp" />
 
 <main class="auction-detail">
+    <jsp:useBean id="asta" scope="request" type="model.Asta"/>
     <c:choose>
 
-        <jsp:useBean id="asta" scope="request" type="model.Asta"/>
         <c:when test="${not empty asta}">
             <h1 class="auction-title">Asta #${asta.id}: ${asta.nome}</h1>
             <c:if test="${not empty asta.immagine}">
@@ -60,8 +60,7 @@
                 </div>
             </section>
 
-            <jsp:useBean id="vincitore" scope="request" type="model.Utente"/>
-            <c:if test="${vincitore != null}">
+            <c:if test="${not empty requestScope.vincitore}">
                 <section class="winner-section">
                     <h3>Vincitore</h3>
                     <p><strong>Username:</strong> ${vincitore.username}</p>
