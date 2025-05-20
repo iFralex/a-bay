@@ -49,8 +49,7 @@ public class DbManager {
             }
 
             // Inserimento utente "Alessio"
-            String insertUserSql = "INSERT OR IGNORE INTO utente (username, pass_hash, nome, cognome, indirizzo) VALUES (?, ?, ?, ?, ?)";
-
+            String insertUserSql = "INSERT INTO utente (username, pass_hash, nome, cognome, indirizzo) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE username=username";
             try (PreparedStatement ps = con.prepareStatement(insertUserSql)) {
                 ps.setString(1, "admin"); // username
                 ps.setString(2, "$2a$12$dyQptPkpjK5a1R5prGq1uulyUYdhF2rBoQODWPHlNWLMUvdbqsg02"); // password: "admin"
@@ -349,12 +348,12 @@ public class DbManager {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                user = new Utente(
-                rs.getString("username"),
-                rs.getString("pass_hash"),
-                rs.getString("nome"),
-                rs.getString("cognome"),
-                rs.getString("indirizzo"));
+                user = new Utente();
+                user.setUsername(rs.getString("username"));
+                user.setPasswordHash(rs.getString("pass_hash"));
+                user.setNome(rs.getString("nome"));
+                user.setCognome(rs.getString("cognome"));
+                user.setIndirizzo(rs.getString("indirizzo"));
             }
         }
 
