@@ -32,6 +32,7 @@
 }
 </style>
 
+
 <c:if test="${not empty errors}">
     <div class="message-box error-box">
         <c:forEach var="err" items="${errors}">
@@ -39,7 +40,6 @@
         </c:forEach>
     </div>
 </c:if>
-
 <c:if test="${not empty success}">
     <div class="message-box success-box">
         <strong>Successo:</strong> ${success}

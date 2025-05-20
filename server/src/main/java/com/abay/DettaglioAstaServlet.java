@@ -1,7 +1,7 @@
 package com.abay;
 
 import model.Asta;
-import model.Asta.Offerta;
+import model.Offerta;
 import model.Utente;
 import utils.DbManager;
 

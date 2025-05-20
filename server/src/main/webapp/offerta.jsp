@@ -13,10 +13,10 @@
 <jsp:include page="/templates/navbar.jsp" />
 <jsp:include page="templates/messaggi.jsp" />
 
+<jsp:useBean id="asta" scope="request" type="model.Asta"/>
 <main class="auction-detail">
     <c:choose>
         <c:when test="${not empty asta}">
-            <jsp:useBean id="asta" scope="request" type="model.Asta"/>
 
             <h1 class="auction-title">Asta #${asta.id}: ${asta.nome}</h1>
 

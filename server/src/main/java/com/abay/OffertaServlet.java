@@ -2,7 +2,7 @@ package com.abay;
 
 import model.Asta;
 import model.Utente;
-import model.Asta.Offerta;
+import model.Offerta;
 import utils.DbManager;
 
 import jakarta.servlet.ServletException;
@@ -92,7 +92,10 @@ public class OffertaServlet extends HttpServlet {
         int prezzoMinimo = (max != null ? max.getPrezzo() : asta.getPrezzoIniziale()) + asta.getRialzoMinimo();
         if (prezzoOfferto >= prezzoMinimo) {
             try {
-                Offerta offerta = new Offerta(username, prezzoOfferto);
+                Offerta offerta = new Offerta();
+                offerta.setUsername(username);
+                offerta.setPrezzo(prezzoOfferto);
+                offerta.setDate(LocalDateTime.now());
                 asta.newOfferta(offerta);
                 DbManager.registraOfferta(astaId, offerta);
             } catch (IllegalArgumentException e) {

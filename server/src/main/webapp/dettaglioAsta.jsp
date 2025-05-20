@@ -12,9 +12,9 @@
 
 <main class="auction-detail">
     <c:choose>
-        <c:when test="${not empty asta}">
-            <jsp:useBean id="asta" scope="request" type="model.Asta"/>
 
+        <jsp:useBean id="asta" scope="request" type="model.Asta"/>
+        <c:when test="${not empty asta}">
             <h1 class="auction-title">Asta #${asta.id}: ${asta.nome}</h1>
             <c:if test="${not empty asta.immagine}">
                 <img class="auction-image" src="data:image/jpeg;base64,${asta.immagine}" alt="Immagine asta" />
@@ -60,6 +60,7 @@
                 </div>
             </section>
 
+            <jsp:useBean id="vincitore" scope="request" type="model.Utente"/>
             <c:if test="${vincitore != null}">
                 <section class="winner-section">
                     <h3>Vincitore</h3>

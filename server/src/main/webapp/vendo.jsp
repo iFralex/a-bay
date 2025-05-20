@@ -22,6 +22,7 @@
             <h2>Aste Attive</h2>
         </div>
         <div class="card-grid">
+            <jsp:useBean id="asteAperte" scope="request" type="java.util.List"/>
             <c:forEach var="a" items="${asteAperte}">
                 <a href="dettaglioAsta?id=${a.id}" class="grid" style="color: inherit; text-decoration: none; width: 100%; display: block;">
                     <c:set var="asta" value="${a}" scope="request" />
@@ -34,6 +35,7 @@
             <h2>Aste Chiuse</h2>
         </div>
         <div class="card-grid">
+            <jsp:useBean id="asteChiuse" scope="request" type="java.util.List"/>
             <c:forEach var="a" items="${asteChiuse}">
                 <a href="dettaglioAsta?id=${a.id}" class="grid" style="color: inherit; text-decoration: none; width: 100%;">
                     <c:set var="asta" value="${a}" scope="request" />
@@ -67,6 +69,7 @@
                 <input type="hidden" name="action" value="createAsta" />
                 <label>Articoli da includere</label>
                 <div class="scroll-row">
+                    <jsp:useBean id="articoliUtente" scope="request" type="java.util.List"/>
                     <c:forEach var="art" items="${articoliUtente}">
                         <div class="scroll-item">
                             <input type="checkbox" name="articoliId" id="art-${art.id}" value="${art.id}" />

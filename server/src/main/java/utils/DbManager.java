@@ -2,7 +2,7 @@ package utils;
 
 import model.Articolo;
 import model.Asta;
-import model.Asta.Offerta;
+import model.Offerta;
 import model.Utente;
 
 import java.sql.*;
@@ -360,7 +360,7 @@ public class DbManager {
         return user;
     }
 
-    public static void registraOfferta(int astaId, Asta.Offerta offerta) throws SQLException {
+    public static void registraOfferta(int astaId, Offerta offerta) throws SQLException {
         registraOfferta(astaId, offerta.getUsername(), offerta.getPrezzo(), offerta.getDate());
     }
 
@@ -376,8 +376,8 @@ public class DbManager {
         }
     }
 
-    public static List<Asta.Offerta> getOffertePerAsta(int idAsta) throws SQLException {
-        List<Asta.Offerta> offerte = new ArrayList<>();
+    public static List<Offerta> getOffertePerAsta(int idAsta) throws SQLException {
+        List<Offerta> offerte = new ArrayList<>();
         String sql = "SELECT username, prezzo_offerto, data_offerta FROM offerta WHERE id_asta = ? ORDER BY prezzo_offerto";
 
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -387,7 +387,11 @@ public class DbManager {
                 String username = rs.getString("username");
                 int prezzo = rs.getInt("prezzo_offerto");
                 LocalDateTime date = LocalDateTime.parse(rs.getString("data_offerta"));
-                offerte.add(new Asta.Offerta(username, prezzo, date));
+                Offerta offerta = new Offerta();
+                offerta.setUsername(username);
+                offerta.setPrezzo(prezzo);
+                offerta.setDate(date);
+                offerte.add(offerta);
             }
         }
 

@@ -60,7 +60,7 @@
     </div>
 
     <div class="center">
-        <form method="get" action="/acquisto">
+        <form method="get" action="${pageContext.request.contextPath}/acquisto">
             <input type="text" name="parolaChiave" placeholder="Cerca...">
             <button type="submit">Cerca</button>
         </form>
@@ -70,10 +70,10 @@
         <c:choose>
             <c:when test="${not empty sessionScope.user}">
                 <span><c:out value="${sessionScope.user.nome}"/> <c:out value="${sessionScope.user.cognome}"/></span>
-                &nbsp<a href="/logout">Logout</a>
+                &nbsp<a href="${pageContext.request.contextPath}/logout">Logout</a>
             </c:when>
             <c:otherwise>
-                <a href="/login">Login</a>
+                <a href="${pageContext.request.contextPath}/login">Login</a>
             </c:otherwise>
         </c:choose>
     </div>
