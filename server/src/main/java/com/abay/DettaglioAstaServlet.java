@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @WebServlet("/dettaglioAsta")
 public class DettaglioAstaServlet extends HttpServlet {
@@ -57,10 +58,10 @@ public class DettaglioAstaServlet extends HttpServlet {
                 return;
             }
 
-            if (utente.getUsername() == asta.getVenditore()) {
-                response.sendRedirect("vendo.jsp");
-                return;
-            }
+//            if (Objects.equals(utente.getUsername(), asta.getVenditore())) {
+//                response.sendRedirect("vendo.jsp");
+//                return;
+//            }
 
             // Se l'asta è chiusa, recupera l'utente vicncitore
             if (asta.getOffertaVincitrice() != null) {

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS articolo (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(200) NOT NULL,
     descrizione VARCHAR(1000),
     immagine blob,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS articolo (
 );
 
 CREATE TABLE IF NOT EXISTS asta (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(200) NOT NULL,
     descrizione VARCHAR(1000),
     immagine blob,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS asta_articoli (
 );
 
 CREATE TABLE IF NOT EXISTS offerta (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     id_asta INTEGER NOT NULL,
     username VARCHAR(100) NOT NULL,
     prezzo_offerto INTEGER NOT NULL CHECK (prezzo_offerto > 0 AND prezzo_offerto < 1000000),

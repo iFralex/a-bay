@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <jsp:include page="/templates/navbar.jsp" />
+  <jsp:include page="templates/navbar.jsp" />
   <jsp:include page="templates/messaggi.jsp" />
 
   <div class="auction-dashboard">

@@ -54,9 +54,9 @@
     </style>
 
     <div class="left">
-        <a href="/">a-bay</a>
-        <a href="/vendo">Vendi</a>
-        <a href="/acquisto">Acquista</a>
+        <a href="${pageContext.request.contextPath}/">a-bay</a>
+        <a href="${pageContext.request.contextPath}/vendo">Vendi</a>
+        <a href="${pageContext.request.contextPath}/acquisto">Acquista</a>
     </div>
 
     <div class="center">
@@ -70,7 +70,7 @@
         <c:choose>
             <c:when test="${not empty sessionScope.user}">
                 <span><c:out value="${sessionScope.user.nome}"/> <c:out value="${sessionScope.user.cognome}"/></span>
-                <a href="/logout">Logout</a>
+                &nbsp<a href="/logout">Logout</a>
             </c:when>
             <c:otherwise>
                 <a href="/login">Login</a>

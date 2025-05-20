@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         } catch (SQLException e) {
-            request.setAttribute("errors", List.of("Errore neldatabase: " + e.getMessage()));
+            request.setAttribute("errors", List.of("Errore nel database: " + e.getMessage()));
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }

@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -247,8 +248,14 @@ public class Asta {
         if (offerte.size() <= 1) {
             return new ArrayList<>();
         }
-        offerte = offerte.subList(1, offerte.size());
-        return !reversed ? offerte : offerte.reversed();
+
+        List<Offerta> result = new ArrayList<>(offerte.subList(1, offerte.size()));
+
+        if (reversed) {
+            Collections.reverse(result);
+        }
+
+        return result;
     }
 
     public int getPrezzoIniziale() {
