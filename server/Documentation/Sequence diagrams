@@ -1,4 +1,4 @@
-I diagrammi di sequenza sono semplificati: gli errori sono raggruppati tutti in ramo else per clarity, e le frecce di ritorno dal dbManager non sono mostrate.
+I diagrammi di sequenza sono semplificati: gli errori sono raggruppati tutti in ramo else per chiarezza, e le frecce di ritorno dal dbManager non sono mostrate.
 
 title Login Process
     participant User
