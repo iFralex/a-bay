@@ -1,0 +1,419 @@
+title Login Process
+  participant "Client (User+Browser+App.js)" as Client
+  participant LoginServlet
+  participant DbManager
+  participant PasswordUtils
+  participant Session
+  participant AuthStatusServlet
+
+  Client->>LoginServlet: POST /login (username, password)
+  LoginServlet->>DbManager: getUtente(username)
+  alt Success
+      DbManager-->>LoginServlet: Return Utente object
+      LoginServlet->>PasswordUtils: verifyPassword(password, passwordHash)
+      alt Password valid
+          LoginServlet->>Session: setAttribute("user", utente)
+          LoginServlet->>Session: setAttribute("isLoggedIn", true)
+          LoginServlet-->>Client: Redirect to /index.html
+          Client->>Client: App.init()
+          Client->>AuthStatusServlet: GET /auth/status
+          AuthStatusServlet->>Session: getAttribute("user")
+          Session-->>AuthStatusServlet: Return user object
+          AuthStatusServlet-->>Client: Return user data
+  Client->>Client: Determine initial route
+  alt First visit or route check
+      Client->>Client: Check cookies (primaVisita, ultimaAzione)
+      Client->>Client: Set appropriate defaultRoute based on cookie values
+  end
+  Client->>Client: navigateTo(determinedRoute)
+      else Invalid credentials
+          LoginServlet-->>Client: Forward to login.jsp with error
+      end
+  else Error or user not found
+      DbManager-->>LoginServlet: SQLException or null
+      LoginServlet-->>Client: Forward to login.jsp with error
+  end
+
+
+  title Logout Process
+  participant "Client (User+Browser+App.js)" as Client
+  participant LogoutServlet
+  participant Session
+  Client->>LogoutServlet: GET /logout
+  LogoutServlet->>LogoutServlet: request.getSession(false)
+  alt Session exists
+      LogoutServlet->>Session: invalidate()
+      Session-->>LogoutServlet: Session terminated
+  else Session doesn't exist
+      note over LogoutServlet: No action needed
+  end
+  LogoutServlet-->>Client: Redirect to /login.jsp
+  Client->>Client: Display login page
+
+
+  title Load ricercaAste Page
+  participant "Client (User+Browser+App.js)" as Client
+  participant RicercaAstePage
+  participant "AuthStatusServlet" as API
+  participant AcquistoServlet
+  participant DbManager
+  Client->>API: GET /auth/status
+  alt User is logged in
+    API-->>Client: Return user data (null if not found)
+  else User is not logged in
+   API-->>Client: Return userdata = null
+   end
+  RicercaAstePage->>RicercaAstePage: loadData(parolaChiave)
+  RicercaAstePage->>API: GET /acquisto with params
+  API->>AcquistoServlet: GET request
+  AcquistoServlet->>AcquistoServlet: Extract parolaChiave parameter
+  alt User is logged in
+      AcquistoServlet->>DbManager: getAstePerParolaChiave(parolaChiave, now)
+      AcquistoServlet->>DbManager: getAsteVinteDaUtente(username)
+      AcquistoServlet->>AcquistoServlet: Process asteVisitate from cookies
+      AcquistoServlet-->>API: Return JSON {asteAperte, asteAggiudicate, asteVisitate}
+  else User not logged in
+      AcquistoServlet->>DbManager: getAstePerParolaChiave(parolaChiave, now)
+      AcquistoServlet-->>API: Return JSON {asteAperte}
+  end
+  API-->>RicercaAstePage: Return processed data
+  RicercaAstePage->>RicercaAstePage: Update page state
+  RicercaAstePage->>RicercaAstePage: Render HTML with auction data
+  RicercaAstePage->>RicercaAstePage: Attach event handlers
+  RicercaAstePage-->>Client: Display auctions page
+
+
+title View Auction Details Flow
+participant "Client(Browser+RicercaAstePage+App.js)" as Client
+participant "OffertaPage" as OffertaPage
+participant "OffertaApiServlet" as API
+participant "DbManager" as DB
+
+Client->>OffertaPage: navigateTo('offerta', {id: astaId})
+
+OffertaPage->>OffertaPage: Parse AstaId
+OffertaPage->>API: GET /api/offerta?id=astaId
+API->>API: Parse astaId parameter
+API->>DB: getAstaById(astaId)
+DB-->>API: Return Asta object
+API-->>OffertaPage: Return JSON {asta: astaObject}
+
+OffertaPage->>OffertaPage: Process auction data
+
+alt User is logged in
+    OffertaPage->>OffertaPage: registraAstaVisitata(astaId, username)
+    OffertaPage->>OffertaPage: Update asteVisitate cookie
+end
+
+alt User is logged in AND NOT auction.chiusa AND user != auction.venditore
+
+    OffertaPage->>OffertaPage: Setup bid form with minimum offer validation
+    OffertaPage->>OffertaPage: Attach submit event handler
+else Auction is closed
+    OffertaPage->>OffertaPage: Display "Quest'asta è chiusa" message
+else User is not logged in
+    OffertaPage->>OffertaPage: Display "Accedi per fare un'offerta" message
+else User is the seller
+    OffertaPage->>OffertaPage: Display "Non puoi fare offerte sulla tua stessa asta" message
+end
+
+OffertaPage->>OffertaPage: Render auction details, articles and offers table
+OffertaPage-->>Client: Display complete auction page
+
+
+title Submit Auction Bid Flow
+participant "User" as User
+participant "OffertaPage" as OffertaPage
+participant "API" as ClientAPI
+participant "OffertaApiServlet" as Servlet
+participant "DbManager" as DB
+
+User->>OffertaPage: Submit bid form with price
+OffertaPage->>OffertaPage: handleFormOfferta(event)
+OffertaPage->>OffertaPage: Client-side validation
+alt Validation fails
+    OffertaPage-->>User: Display error message
+else Validation passes
+    OffertaPage->>ClientAPI: API.post('/offerta', formData)
+    ClientAPI->>Servlet: POST /api/offerta (astaId, prezzo)
+
+    Servlet->>Servlet: Check user authentication
+    alt User not authenticated
+        Servlet-->>ClientAPI: Return 401 Unauthorized
+        ClientAPI-->>OffertaPage: Throw error
+        OffertaPage-->>User: Display authentication error
+    else User authenticated
+        Servlet->>DB: getAstaById(astaId)
+        DB-->>Servlet: Return Asta object
+
+        Servlet->>Servlet: Calculate minimum bid amount
+        alt Bid amount too low
+            Servlet-->>ClientAPI: Return 400 Bad Request
+            ClientAPI-->>OffertaPage: Throw error
+            OffertaPage-->>User: Display "offer too low" error
+        else Bid amount valid
+            Servlet->>DB: registraOfferta(astaId, offerta)
+            DB-->>Servlet: Success
+            Servlet-->>ClientAPI: Return success JSON
+            ClientAPI-->>OffertaPage: Return success response
+
+            OffertaPage->>OffertaPage: MessageManager.showSuccess()
+            OffertaPage->>OffertaPage: loadData(astaId)
+            OffertaPage->>ClientAPI: API.get('/offerta', {id: astaId})
+            ClientAPI->>Servlet: GET /api/offerta?id=astaId
+            Servlet->>DB: getAstaById(astaId)
+            DB-->>Servlet: Return updated Asta with new offer
+            Servlet-->>ClientAPI: Return updated auction data
+            ClientAPI-->>OffertaPage: Return updated data
+            OffertaPage->>OffertaPage: render(astaId)
+            OffertaPage-->>User: Display updated auction page with new bid
+        end
+    end
+end
+
+
+title Load GestioneAste Page
+  participant "Client (User+Browser+App.js)" as Client
+  participant GestioneAstePage
+  participant "API+VendoServlet" as ApiServlet
+  participant "DbManager" as DB
+  participant "Session" as Session
+
+  Client->>GestioneAstePage: navigateTo('gestioneAste')
+
+  GestioneAstePage->>ApiServlet: API.get('/vendo')
+
+  ApiServlet->>Session: getAttribute("user")
+  Session-->>ApiServlet: Return user object
+
+  alt User is logged in
+      ApiServlet->>DB: getArticoliDisponibiliPerUtente(username)
+      DB-->>ApiServlet: Return available articles
+      ApiServlet->>DB: getAsteUtente(username, false)
+      DB-->>ApiServlet: Return open auctions
+      ApiServlet->>DB: getAsteUtente(username, true)
+      DB-->>ApiServlet: Return closed auctions
+      ApiServlet-->>GestioneAstePage: Return JSON {articoliUtente, asteAperte, asteChiuse}
+  else User not logged in
+      ApiServlet-->>GestioneAstePage: Return 401 Unauthorized
+  end
+
+  GestioneAstePage->>GestioneAstePage: Update page state
+  GestioneAstePage->>GestioneAstePage: Render HTML with articles and auctions
+  GestioneAstePage->>GestioneAstePage: Attach event handlers for forms
+  GestioneAstePage-->>Client: Display auction management page
+
+
+title Submit Auction Bid Flow
+participant "User" as User
+participant "OffertaPage" as OffertaPage
+participant "API+OffertaApiServlet" as ApiServlet
+participant "DbManager" as DB
+participant "Session" as Session
+
+User->>OffertaPage: Submit bid form with price
+OffertaPage->>OffertaPage: handleFormOfferta(event)
+OffertaPage->>OffertaPage: Client-side validation
+OffertaPage->>ApiServlet: API.post('/offerta', formData)
+
+ApiServlet->>Session: getAttribute("user")
+Session-->>ApiServlet: Return user object
+
+alt Success path
+    ApiServlet->>ApiServlet: Parse parameters (astaId, prezzo)
+    ApiServlet->>DB: getAstaById(astaId)
+    DB-->>ApiServlet: Return Asta object
+    ApiServlet->>ApiServlet: Calculate minimum bid amount
+    ApiServlet->>ApiServlet: Validate bid price
+    ApiServlet->>DB: registraOfferta(astaId, offerta)
+    DB-->>ApiServlet: Success
+    ApiServlet-->>OffertaPage: Return success JSON
+    OffertaPage->>OffertaPage: MessageManager.showSuccess()
+    OffertaPage->>OffertaPage: loadData(astaId)
+    OffertaPage->>ApiServlet: API.get('/offerta?id=astaId')
+    ApiServlet->>DB: getAstaById(astaId)
+    DB-->>ApiServlet: Return updated Asta object
+    ApiServlet-->>OffertaPage: Return updated auction data
+    OffertaPage->>OffertaPage: render(astaId)
+    OffertaPage-->>User: Display updated auction page with new bid
+else Error conditions (400/401)
+
+    note over ApiServlet: 400: Invalid parameters, price too low, DB error
+    note over ApiServlet: 401: User not authenticated
+    ApiServlet->>ApiServlet: Add appropriate error message to errors list
+
+    ApiServlet-->>OffertaPage: Return error response with messages
+    OffertaPage->>OffertaPage: MessageManager.showErrors()
+    OffertaPage-->>User: Display appropriate error message
+end
+
+
+title Add New Auction Flow
+participant "User" as User
+participant "GestioneAstePage" as GestioneAstePage
+participant "API+VendoServlet" as ApiServlet
+participant "DbManager" as DB
+participant "Session" as Session
+
+User->>GestioneAstePage: Submit form
+GestioneAstePage->>GestioneAstePage: handleFormAsta(event)
+GestioneAstePage->>GestioneAstePage: Validate form (check articles selected)
+GestioneAstePage->>GestioneAstePage: Prepare FormData with action=createAsta
+GestioneAstePage->>ApiServlet: API.post('/vendo', formData)
+
+ApiServlet->>Session: getAttribute("user")
+
+
+alt Success Path
+    ApiServlet->>ApiServlet: Parse parameters (nome, descrizione, immagine, etc.)
+    ApiServlet->>ApiServlet: Parse articoliIds from request
+    ApiServlet->>DB: Get prices for all selected articles
+
+    ApiServlet->>ApiServlet: Calculate initial price (sum of article prices)
+    ApiServlet->>ApiServlet: Create Asta object with all parameters
+    ApiServlet->>DB: inserisciAsta(asta)
+    DB-->>ApiServlet: Success
+    ApiServlet-->>GestioneAstePage: Return success response
+    GestioneAstePage->>GestioneAstePage: MessageManager.showSuccess()
+    GestioneAstePage->>GestioneAstePage: Set cookie "ultimaAzione=creazione-asta"
+    GestioneAstePage->>GestioneAstePage: loadData()
+    GestioneAstePage->>ApiServlet: API.get('/vendo')
+    ApiServlet->>DB: getArticoliDisponibiliPerUtente(username)
+
+    ApiServlet->>DB: getAsteUtente(username, false)
+
+    ApiServlet->>DB: getAsteUtente(username, true)
+
+    ApiServlet-->>GestioneAstePage: Return updated data
+    GestioneAstePage->>GestioneAstePage: render()
+    GestioneAstePage-->>User: Display updated page with new auction
+else Error Conditions
+    note over ApiServlet: Possible errors:
+    note over ApiServlet: 401: User not authenticated
+    note over ApiServlet: 400: Missing required fields (name, description, etc.)
+    note over ApiServlet: 400: No articles selected for auction
+    note over ApiServlet: 400: Invalid auction parameters (dates, prices)
+    note over ApiServlet: 500: Database errors during insertion
+
+    ApiServlet->>ApiServlet: Identify error type and add to errors list
+    ApiServlet->>ApiServlet: Set appropriate status code (400/401/500)
+    ApiServlet-->>GestioneAstePage: Return error response with messages
+    GestioneAstePage->>GestioneAstePage: MessageManager.showErrors()
+    GestioneAstePage-->>User: Display appropriate error message
+end
+
+
+title View Auction Details Flow (DettaglioAsta)
+participant "User" as User
+participant "App.js" as App
+participant "DettaglioAstaPage" as DetailPage
+participant "API+DettaglioAstaApiServlet" as ApiServlet
+participant "DbManager" as DB
+participant "Session" as Session
+
+User->>App: Navigate to auction detail page
+App->>DetailPage: navigateTo('dettaglioAsta', {id: astaId})
+
+DetailPage->>ApiServlet: API.get('/dettaglioAsta', {id: astaId})
+
+ApiServlet->>Session: getAttribute("user")
+Session-->>ApiServlet: Return user object
+
+alt Success Path
+    ApiServlet->>ApiServlet: Validate user authentication
+    ApiServlet->>DB: getAstaById(astaId)
+
+    ApiServlet->>ApiServlet: Check if user.username == asta.venditore
+
+    alt Auction has winning offer
+        ApiServlet->>DB: getUtente(asta.getOffertaVincitrice().getUsername())
+
+        ApiServlet->>ApiServlet: Add winner to result
+    end
+
+    ApiServlet-->>DetailPage: Return JSON with asta and winner info
+
+    DetailPage->>App: Check current user (App.getCurrentUser())
+    App-->>DetailPage: Return current user
+    DetailPage->>DetailPage: Set isVenditore flag
+
+
+    alt Auction is closed and has winner
+        DetailPage->>DetailPage: Add winner section to HTML
+    end
+
+    alt User is seller and auction is open
+        DetailPage->>DetailPage: Add "Close Auction" form to HTML
+    end
+
+    DetailPage->>DetailPage: Prepare the page
+
+    DetailPage-->>User: Display complete auction details page
+else Error Conditions
+    note over ApiServlet: Possible errors:
+    note over ApiServlet: 401: User not authenticated
+    note over ApiServlet: 403: User is not the seller
+    note over ApiServlet: 400: Invalid auction ID
+    note over ApiServlet: 404: Auction not found
+    note over ApiServlet: 500: Database errors
+
+    ApiServlet->>ApiServlet: Identify error type
+    ApiServlet->>ApiServlet: Set appropriate status code
+    ApiServlet-->>DetailPage: Return error response
+    DetailPage->>DetailPage: MessageManager.showErrors()
+    DetailPage-->>User: Display appropriate error message
+end
+
+
+title Close Auction Flow
+participant "User" as User
+participant "DettaglioAstaPage" as DetailPage
+participant "API+DettaglioAstaApiServlet" as ApiServlet
+participant "DbManager" as DB
+participant "Session" as Session
+
+User->>DetailPage: Click "Chiudi Asta" button
+DetailPage->>DetailPage: Display confirmation dialog
+alt User cancels
+    DetailPage-->>User: Close dialog, no action taken
+else User confirms
+    DetailPage->>DetailPage: handleChiudiAsta(event)
+    DetailPage->>DetailPage: Prepare FormData with id and aggiudicatario
+    DetailPage->>ApiServlet: API.post('/dettaglioAsta', formData)
+
+    ApiServlet->>Session: getAttribute("user")
+    Session-->>ApiServlet: Return user object
+
+    alt Success Path
+        ApiServlet->>ApiServlet: Validate user authentication
+        ApiServlet->>ApiServlet: Parse auction ID and winner username
+        ApiServlet->>DB: chiudiAsta(astaId, aggiudicatario)
+        DB-->>ApiServlet: Success
+        ApiServlet->>DB: getAstaById(astaId)
+        DB-->>ApiServlet: Return updated Asta object
+
+        alt Auction has winning offer
+            ApiServlet->>DB: getUtente(asta.getOffertaVincitrice().getUsername())
+            DB-->>ApiServlet: Return winner user object
+            ApiServlet->>ApiServlet: Add winner to result
+        end
+
+        ApiServlet-->>DetailPage: Return success response
+        DetailPage->>DetailPage: MessageManager.showSuccess()
+        DetailPage->>DetailPage: Change the page to show the updated auction
+        DetailPage-->>User: Display updated auction details page
+    else Error Conditions
+        note over ApiServlet: Possible errors:
+        note over ApiServlet: 401: User not authenticated
+        note over ApiServlet: 403: User is not the seller
+        note over ApiServlet: 400: Invalid auction ID
+        note over ApiServlet: 400: Missing aggiudicatario
+        note over ApiServlet: 500: Database errors
+
+        ApiServlet->>ApiServlet: Identify error type
+        ApiServlet->>ApiServlet: Set appropriate status code
+        ApiServlet-->>DetailPage: Return error response
+        DetailPage->>DetailPage: MessageManager.showErrors()
+        DetailPage-->>User: Display appropriate error message
+    end
+end
