@@ -1,0 +1,249 @@
+I diagrammi di sequenza sono semplificati: gli errori sono raggruppati tutti in ramo else per chiarezza, e le frecce di ritorno dal dbManager non sono mostrate.
+
+title Login Process
+    participant User
+    participant Browser
+    participant LoginServlet
+    participant DbManager
+    participant PasswordUtils
+    participant Session
+
+    User->>Browser: Enter login credentials
+    Browser->>LoginServlet: POST /login (username, password)
+    LoginServlet->>DbManager: getUtente(username)
+
+    alt Success
+        DbManager-->>LoginServlet: Return Utente object
+        LoginServlet->>PasswordUtils: verifyPassword(password, passwordHash)
+        alt Password valid
+            PasswordUtils-->>LoginServlet: true
+            LoginServlet->>Session: setAttribute("user", utente)
+            LoginServlet->>Session: setAttribute("isLoggedIn", true)
+            LoginServlet-->>Browser: Redirect to /home
+            Browser-->>User: Display home page
+        else Invalid credentials
+            PasswordUtils-->>LoginServlet: false
+            LoginServlet-->>Browser: Forward to login.jsp with error
+            Browser-->>User: Display error message
+        end
+    else Error or user not found
+        DbManager-->>LoginServlet: SQLException or null
+        LoginServlet-->>Browser: Forward to login.jsp with error
+        Browser-->>User: Display error message
+    end
+
+title Logout Process
+    participant User
+    participant Navbar
+    participant Browser
+    participant LogoutServlet
+    participant Session
+
+    Note over Navbar: Displays "Logout" link when user is logged in
+    User->>Navbar: Click "Logout" link
+    Navbar->>Browser: Request /logout
+    Browser->>LogoutServlet: GET /logout
+    LogoutServlet->>LogoutServlet: request.getSession(false)
+
+    alt Session exists
+        LogoutServlet->>Session: invalidate()
+        Session-->>LogoutServlet: Session terminated
+    else Session doesn't exist
+        Note over LogoutServlet: No action needed
+    end
+
+    LogoutServlet-->>Browser: Redirect to /login
+Browser-->>User: Display login page
+
+title Navigation to vendo page
+    participant User
+    participant JSP
+    participant VendoServlet
+    participant DbManager
+
+    User->>JSP: Click "Vendi un articolo" on home page
+    JSP->>VendoServlet: GET request to /vendo
+    VendoServlet->>VendoServlet: Check if user is logged in
+
+    alt User not logged in
+        VendoServlet-->>User: Redirect to login.jsp
+    else Error
+        VendoServlet-->>JSP: Forward to vendo.jsp with error(s)
+        JSP-->>User: Display error message(s)
+    else Success
+        VendoServlet->>DbManager: getArticoliDisponibiliPerUtente(username)
+        VendoServlet->>DbManager: getAsteUtente(username, false)
+        VendoServlet->>DbManager: getAsteUtente(username, true)
+        VendoServlet-->>JSP: Forward to vendo.jsp with attributes
+        JSP-->>User: Display vendo.jsp with forms and data
+    end
+
+title Create new article flow
+
+    participant User
+    participant JSP
+    participant VendoServlet
+    participant DbManager
+
+    User->>JSP: Submit "Nuovo Articolo" form
+    JSP->>VendoServlet: POST to /vendo with action=createArticolo
+    VendoServlet->>VendoServlet: Extract form parameters
+
+    alt Success
+        VendoServlet->>DbManager: inserisciArticolo(nome, descrizione, imageStream, prezzo, username)
+        VendoServlet-->>User: Redirect to /vendo with success message
+
+    else Error
+        VendoServlet-->>User: Redirect to /vendo with error message(s)
+    end
+
+title Create new auction flow
+    participant User
+    participant JSP
+    participant VendoServlet
+    participant DbManager
+
+    User->>JSP: Submit form
+    JSP->>VendoServlet: POST to /vendo with action=createAsta
+    VendoServlet->>VendoServlet: Extract form parameters
+
+    alt Success
+        loop For each selected article
+            VendoServlet->>DbManager: getPrezzoArticolo(id)
+        end
+        VendoServlet->>VendoServlet: Create Asta object with collected data
+        VendoServlet->>DbManager: inserisciAsta(asta)
+        DbManager-->>VendoServlet: Confirmation
+        VendoServlet-->>User: Redirect to /vendo with success message
+    else Error
+        VendoServlet-->>User: Redirect to /vendo with error message(s)
+    end
+
+title View Auction Details
+    participant User
+    participant JSP
+    participant DettaglioAstaServlet
+    participant DbManager
+
+    User->>JSP: Click on auction link
+    JSP->>DettaglioAstaServlet: GET request to /dettaglioAsta?id=X
+    DettaglioAstaServlet->>DettaglioAstaServlet: Check if user is logged in
+
+    alt User logged in
+        DettaglioAstaServlet->>DbManager: getAstaById(astaId)
+
+
+        alt Auction is closed (has winner)
+            DettaglioAstaServlet->>DbManager: getUtente(asta.getOffertaVincitrice().getUsername())
+
+        end
+
+        DettaglioAstaServlet-->>JSP: Forward to dettaglioAsta.jsp with attributes
+        JSP-->>User: Display auction details page
+    else User not logged in
+        DettaglioAstaServlet-->>User: Redirect to login.jsp
+    else Error
+        DettaglioAstaServlet-->>JSP: Forward to dettaglioAsta.jsp with error(s)
+        JSP-->>User: Display error message(s)
+    end
+
+title Close Auction
+    participant User
+    participant JSP
+    participant DettaglioAstaServlet
+    participant DbManager
+
+    User->>JSP: Click "Chiudi Asta" button
+    JSP->>DettaglioAstaServlet: POST to /dettaglioAsta with id and aggiudicatario
+
+    alt Success
+        DettaglioAstaServlet->>DbManager: chiudiAsta(astaId, aggiudicatario)
+        DettaglioAstaServlet->>DbManager: getAstaById(astaId)
+        DbManager-->>DettaglioAstaServlet: Return updated Asta object
+
+        alt Auction has winner
+            DettaglioAstaServlet->>DbManager: getUtente(asta.getOffertaVincitrice().getUsername())
+        end
+
+        DettaglioAstaServlet-->>User: Redirect to dettaglioAsta?id=X with success message
+    else Error
+        DettaglioAstaServlet-->>User: Redirect to dettaglioAsta?id=X with error message
+    end
+
+title Search and Display Auctions
+    participant User
+    participant JSP
+    participant AcquistoServlet
+    participant DbManager
+
+    User->>JSP: Visit acquisto page or submit search
+    JSP->>AcquistoServlet: GET request to /acquisto?parolaChiave=X
+    AcquistoServlet->>AcquistoServlet: Extract parolaChiave parameter
+
+    alt Success with search keyword
+        AcquistoServlet->>DbManager: getAstePerParolaChiave(parolaChiave, now)
+        AcquistoServlet->>AcquistoServlet: Sort auctions by remaining time
+
+        alt User is logged in
+            AcquistoServlet->>DbManager: getAsteVinteDaUtente(username)
+        end
+
+        AcquistoServlet-->>JSP: Forward to acquisto.jsp with attributes
+        JSP-->>User: Display open auctions and won auctions
+    else No search keyword
+        AcquistoServlet-->>JSP: Forward to acquisto.jsp with empty auctions list
+        JSP-->>User: Display search form only
+    else Error
+        AcquistoServlet-->>JSP: Forward to acquisto.jsp with error message(s)
+        JSP-->>User: Display error message(s)
+    end
+
+title View Auction for Offering
+    participant User
+    participant JSP
+    participant OffertaServlet
+    participant DbManager
+
+    User->>JSP: Click on auction to make offer
+    JSP->>OffertaServlet: GET /offerta?id=X
+
+    alt Success
+        OffertaServlet->>DbManager: getAstaById(astaId)
+        OffertaServlet-->>JSP: Forward to offerta.jsp with asta attribute
+        JSP-->>User: Display auction details with offer form
+    else Invalid auction ID
+        OffertaServlet-->>User: Redirect to acquisto.jsp
+    else Error
+        OffertaServlet-->>JSP: Forward to offerta.jsp with error message(s)
+        JSP-->>User: Display error message(s)
+    end
+
+title Submit Offer
+    participant User
+    participant JSP
+    participant OffertaServlet
+    participant DbManager
+
+    User->>JSP: Submit offer form with price
+    JSP->>OffertaServlet: POST /offerta with astaId and prezzo
+
+    alt User logged in
+        OffertaServlet->>DbManager: getAstaById(astaId)
+
+        OffertaServlet->>OffertaServlet: Validate offer amount
+
+        alt Valid offer amount
+            OffertaServlet->>OffertaServlet: Create new Offerta object
+            OffertaServlet->>OffertaServlet: asta.newOfferta(offerta)
+            OffertaServlet->>DbManager: registraOfferta(astaId, offerta)
+
+            OffertaServlet-->>User: Redirect to /offerta?id=X with success message
+        else Invalid offer amount
+            OffertaServlet-->>User: Redirect to /offerta?id=X with error message
+        end
+    else User not logged in
+        OffertaServlet-->>User: Redirect to login.jsp
+    else Error (invalid astaId or database error)
+        OffertaServlet-->>User: Redirect to "acquista" or /offerta?id=X with error
+    end
+
