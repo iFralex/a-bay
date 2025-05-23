@@ -1,10 +1,10 @@
 package com.abay;
 
 import model.Asta;
-import model.Asta.Offerta;
+import model.Offerta;
 import model.Utente;
-import utils.DbManager;
-
+import utils.DAO.AstaDAO;
+import utils.DAO.UtenteDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @WebServlet("/dettaglioAsta")
 public class DettaglioAstaServlet extends HttpServlet {
@@ -51,21 +52,21 @@ public class DettaglioAstaServlet extends HttpServlet {
         // Recupera asta e offerte dal DB
         Asta asta = null;
         try {
-            asta = DbManager.getAstaById(astaId);
+            asta = AstaDAO.getAstaById(astaId);
             if (asta == null) {
                 response.sendRedirect("vendo.jsp");
                 return;
             }
 
-            if (utente.getUsername() == asta.getVenditore()) {
-                response.sendRedirect("vendo.jsp");
-                return;
-            }
+//            if (Objects.equals(utente.getUsername(), asta.getVenditore())) {
+//                response.sendRedirect("vendo.jsp");
+//                return;
+//            }
 
             // Se l'asta è chiusa, recupera l'utente vicncitore
             if (asta.getOffertaVincitrice() != null) {
                 try {
-                    Utente vincitore = DbManager.getUtente(asta.getOffertaVincitrice().getUsername());
+                    Utente vincitore = UtenteDAO.getUtente(asta.getOffertaVincitrice().getUsername());
                     request.setAttribute("vincitore", vincitore);
                 } catch (IllegalArgumentException e) {
                     errors.add(e.getMessage());
@@ -101,17 +102,17 @@ public class DettaglioAstaServlet extends HttpServlet {
         Asta asta = null;
 
         try {
-            DbManager.chiudiAsta(astaId, aggiudicatario);
+            AstaDAO.chiudiAsta(astaId, aggiudicatario);
             request.setAttribute("success", "Asta chiusa!");
         } catch (SQLException e) {
             errors.add("Impossibile chiudere asta per un errore nel Database: " + e.getMessage());
         }
 
         try {
-            asta = DbManager.getAstaById(astaId);
+            asta = AstaDAO.getAstaById(astaId);
             if (asta != null && asta.getOffertaVincitrice() != null) {
                 try {
-                    Utente vincitore = DbManager.getUtente(asta.getOffertaVincitrice().getUsername());
+                    Utente vincitore = UtenteDAO.getUtente(asta.getOffertaVincitrice().getUsername());
                     request.setAttribute("vincitore", vincitore);
                 } catch (IllegalArgumentException e) {
                     errors.add(e.getMessage());

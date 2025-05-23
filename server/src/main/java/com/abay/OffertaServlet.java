@@ -2,9 +2,9 @@ package com.abay;
 
 import model.Asta;
 import model.Utente;
-import model.Asta.Offerta;
-import utils.DbManager;
-
+import utils.DAO.AstaDAO;
+import utils.DAO.OffertaDAO;
+import model.Offerta;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -46,7 +46,7 @@ public class OffertaServlet extends HttpServlet {
         }
 
         try {
-            Asta asta = DbManager.getAstaById(astaId); // recupera asta con articoli
+            Asta asta = AstaDAO.getAstaById(astaId); // recupera asta con articoli
             if (asta == null) {
                 response.sendRedirect("acquisto.jsp");
                 return;
@@ -80,7 +80,7 @@ public class OffertaServlet extends HttpServlet {
 
         Asta asta = null;
         try {
-            asta = DbManager.getAstaById(astaId);
+            asta = AstaDAO.getAstaById(astaId);
         } catch (Exception e) {
             response.sendRedirect("acquista");
             return;
@@ -92,9 +92,12 @@ public class OffertaServlet extends HttpServlet {
         int prezzoMinimo = (max != null ? max.getPrezzo() : asta.getPrezzoIniziale()) + asta.getRialzoMinimo();
         if (prezzoOfferto >= prezzoMinimo) {
             try {
-                Offerta offerta = new Offerta(username, prezzoOfferto);
+                Offerta offerta = new Offerta();
+                offerta.setUsername(username);
+                offerta.setPrezzo(prezzoOfferto);
+                offerta.setDate(LocalDateTime.now());
                 asta.newOfferta(offerta);
-                DbManager.registraOfferta(astaId, offerta);
+                OffertaDAO.registraOfferta(astaId, offerta);
             } catch (IllegalArgumentException e) {
                 errors.add("Impossibile registrare offerta: " + e.getMessage());
             } catch (SQLException e) {

@@ -1,3 +1,4 @@
+<jsp:useBean id="exception" scope="request" type="java.nio.charset.MalformedInputException"/>
 <%@ page isErrorPage="true" %>
 <html>
 <head>

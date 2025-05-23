@@ -5,7 +5,8 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
-import utils.DbManager;
+import utils.DAO.AstaDAO;
+import utils.DAO.ArticoloDAO;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,21 +48,21 @@ public class VendoServlet extends HttpServlet {
 
         try {
             try {
-                List<Articolo> articoliUtente = DbManager.getArticoliDisponibiliPerUtente(utente.getUsername());
+                List<Articolo> articoliUtente = ArticoloDAO.getArticoliDisponibiliPerUtente(utente.getUsername());
                 request.setAttribute("articoliUtente", articoliUtente);
             } catch (IllegalArgumentException e) {
                 errors.add(e.getMessage());
             }
 
             try {
-                List<Asta> asteAperte = DbManager.getAsteUtente(utente.getUsername(), false);
+                List<Asta> asteAperte = AstaDAO.getAsteUtente(utente.getUsername(), false);
                 request.setAttribute("asteAperte", asteAperte);
             } catch (IllegalArgumentException e) {
                 errors.add(e.getMessage());
             }
 
             try {
-                List<Asta> asteChiuse = DbManager.getAsteUtente(utente.getUsername(), true);
+                List<Asta> asteChiuse = AstaDAO.getAsteUtente(utente.getUsername(), true);
                 request.setAttribute("asteChiuse", asteChiuse);
             } catch (IllegalArgumentException e) {
                 errors.add(e.getMessage());
@@ -113,7 +114,7 @@ public class VendoServlet extends HttpServlet {
 
             try {
                 int prezzo = Integer.parseInt(request.getParameter("prezzo"));
-                DbManager.inserisciArticolo(nome, descrizione, imageStream, prezzo, utente.getUsername());
+                ArticoloDAO.inserisciArticolo(nome, descrizione, imageStream, prezzo, utente.getUsername());
                 session.setAttribute("success", "Articolo salvato con successo!");
             } catch (NumberFormatException e) {
                 errors.add("Prezzo non valido.");
@@ -140,7 +141,7 @@ public class VendoServlet extends HttpServlet {
                 for (String idStr : articoliIds) {
                     int id = Integer.parseInt(idStr);
                     idArticoli.add(id);
-                    prezzoIniziale += DbManager.getPrezzoArticolo(id);
+                    prezzoIniziale += ArticoloDAO.getPrezzoArticolo(id);
                 }
 
                 // Handle image upload
@@ -162,7 +163,7 @@ public class VendoServlet extends HttpServlet {
                 asta.setDescrizione(request.getParameter("descrizione"));
                 asta.setImmagine(encodedImg);
 
-                DbManager.inserisciAsta(asta);
+                AstaDAO.inserisciAsta(asta);
                 session.setAttribute("success", "Asta salvata con successo!");
             } catch (IllegalArgumentException e) {
                 errors.add("Impossibile creare l'asta: " + e.getMessage());

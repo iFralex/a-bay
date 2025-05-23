@@ -4,7 +4,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Home - Aste Online</title>
+    <title>Home - Aste Online HTML</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>

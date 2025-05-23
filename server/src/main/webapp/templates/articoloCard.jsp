@@ -1,3 +1,4 @@
+<jsp:useBean id="articolo" scope="request" type="model.Articolo"/>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 

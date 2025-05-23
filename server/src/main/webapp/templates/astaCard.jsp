@@ -1,3 +1,4 @@
+<jsp:useBean id="asta" scope="request" type="model.Asta"/>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="utils.TimeUtils" %>

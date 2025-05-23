@@ -1,20 +1,16 @@
 package model;
 
-public class Utente {
+import java.io.Serializable;
+
+public class Utente implements Serializable{
     private String username;
     private String passwordHash;
     private String nome;
     private String cognome;
     private String indirizzo;
 
-    public Utente(String username, String passwordHash, String nome, String cognome, String indirizzo) {
-        setUsername(username);
-        setPasswordHash(passwordHash);
-        setNome(nome);
-        setCognome(cognome);
-        setIndirizzo(indirizzo);
+    public Utente() {
     }
-
     // Setters
     public void setUsername(String username) {
         if (username == null || username.trim().length() < 1 || username.trim().length() >= 100) {

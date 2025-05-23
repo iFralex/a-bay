@@ -11,10 +11,10 @@
 <jsp:include page="templates/messaggi.jsp" />
 
 <main class="auction-detail">
+    <jsp:useBean id="asta" scope="request" type="model.Asta"/>
     <c:choose>
-        <c:when test="${not empty asta}">
-            <jsp:useBean id="asta" scope="request" type="model.Asta"/>
 
+        <c:when test="${not empty asta}">
             <h1 class="auction-title">Asta #${asta.id}: ${asta.nome}</h1>
             <c:if test="${not empty asta.immagine}">
                 <img class="auction-image" src="data:image/jpeg;base64,${asta.immagine}" alt="Immagine asta" />
@@ -60,7 +60,7 @@
                 </div>
             </section>
 
-            <c:if test="${vincitore != null}">
+            <c:if test="${not empty requestScope.vincitore}">
                 <section class="winner-section">
                     <h3>Vincitore</h3>
                     <p><strong>Username:</strong> ${vincitore.username}</p>

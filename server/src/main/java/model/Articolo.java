@@ -8,6 +8,8 @@ public class Articolo {
     private int prezzo;
     private String venditore; // username
 
+    public Articolo() {}
+    
     public Articolo(int id, String nome, int prezzo, String venditore, String descrizione, String immagine) {
         setId(id);
         setNome(nome);

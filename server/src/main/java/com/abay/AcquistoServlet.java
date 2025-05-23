@@ -1,10 +1,9 @@
 package com.abay;
 
 import model.Asta;
-import model.Asta.Offerta;
+import model.Offerta;
 import model.Utente;
-import utils.DbManager;;
-
+import utils.DAO.AstaDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -29,7 +28,7 @@ public class AcquistoServlet extends HttpServlet {
         List<Asta> asteAperte = new ArrayList<>();
         if (parolaChiave != null && !parolaChiave.trim().isEmpty()) {
             try {
-                asteAperte = DbManager.getAstePerParolaChiave(parolaChiave, now);
+                asteAperte = AstaDAO.getAstePerParolaChiave(parolaChiave, now);
             } catch (IllegalArgumentException e) {
                 errors.add(e.getMessage());
             } catch (SQLException e) {
@@ -49,7 +48,7 @@ public class AcquistoServlet extends HttpServlet {
             Utente utente = (Utente) session.getAttribute("user");
             if (utente != null) {
                 try {
-                    asteAggiudicate = DbManager.getAsteVinteDaUtente(utente.getUsername());
+                    asteAggiudicate = AstaDAO.getAsteVinteDaUtente(utente.getUsername());
                 } catch (IllegalArgumentException e) {
                     errors.add(e.getMessage());
                 } catch (SQLException e) {

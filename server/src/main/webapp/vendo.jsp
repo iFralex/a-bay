@@ -22,6 +22,7 @@
             <h2>Aste Attive</h2>
         </div>
         <div class="card-grid">
+            <jsp:useBean id="asteAperte" scope="request" type="java.util.List"/>
             <c:forEach var="a" items="${asteAperte}">
                 <a href="dettaglioAsta?id=${a.id}" class="grid" style="color: inherit; text-decoration: none; width: 100%; display: block;">
                     <c:set var="asta" value="${a}" scope="request" />
@@ -34,6 +35,7 @@
             <h2>Aste Chiuse</h2>
         </div>
         <div class="card-grid">
+            <jsp:useBean id="asteChiuse" scope="request" type="java.util.List"/>
             <c:forEach var="a" items="${asteChiuse}">
                 <a href="dettaglioAsta?id=${a.id}" class="grid" style="color: inherit; text-decoration: none; width: 100%;">
                     <c:set var="asta" value="${a}" scope="request" />
