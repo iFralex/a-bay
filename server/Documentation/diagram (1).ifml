@@ -5,6 +5,7 @@
       <interactionFlowModelElements xmi:type="ifml:ViewContainer" xmi:id="ViewContainer_0gcuwil" uml:name="Login" isLandmark="false" isDefault="true" isXOR="false">
         <inInteractionFlows>Flow_09pu52c</inInteractionFlows>
         <inInteractionFlows>Flow_1yl1ij1</inInteractionFlows>
+        <inInteractionFlows>Flow_1xf6fvw</inInteractionFlows>
         <viewElements xmi:type="ifml:ViewComponent" xmi:id="ViewComponent_1wbg9d0" uml:name="Login form">
           <parameters xmi:type="ifml:Parameter" xmi:id="Parameter_0thpz3h" name="Username" />
           <parameters xmi:type="ifml:Parameter" xmi:id="Parameter_1fvasey" name="Password" />
@@ -26,10 +27,11 @@
       <interactionFlowModelElements xmi:type="ifml:ViewContainer" xmi:id="ViewContainer_1rrsdk2" uml:name="Home">
         <inInteractionFlows>Flow_16l20hw</inInteractionFlows>
         <inInteractionFlows>Flow_0327guc</inInteractionFlows>
-        <viewElementEvents xmi:type="ifml:ViewElementEvent" xmi:id="Event_0p27for" uml:name="Click">
-          <outInteractionFlows>Flow_0y8fvt9</outInteractionFlows>
-        </viewElementEvents>
-        <viewElements xmi:type="ifml:ViewComponent" xmi:id="ViewComponent_1hoiu68" uml:name="Vendi Link" />
+        <viewElements xmi:type="ifml:ViewComponent" xmi:id="ViewComponent_1hoiu68" uml:name="Vendi Link">
+          <viewElementEvents xmi:type="ifml:ViewElementEvent" xmi:id="Event_0p27for" uml:name="Click">
+            <outInteractionFlows>Flow_17sn8hw</outInteractionFlows>
+          </viewElementEvents>
+        </viewElements>
         <viewElements xmi:type="ifml:ViewComponent" xmi:id="ViewComponent_0gf6jxa" uml:name="Acquista Link">
           <viewElementEvents xmi:type="ifml:ViewElementEvent" xmi:id="Event_16cl9ao" uml:name="Click">
             <outInteractionFlows>Flow_1l4gy5x</outInteractionFlows>
@@ -159,13 +161,12 @@
       <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_0fuiyc1" sourceInteractionFlowElement="Event_1ozhpgo" targetInteractionFlowElement="ViewContainer_0hmnr6o" />
       <interactionFlowModelElements xmi:type="ifml:Action" xmi:id="Action_14winaq" uml:name="goTo vendi">
         <inInteractionFlows>Flow_0i33xms</inInteractionFlows>
-        <inInteractionFlows>Flow_0y8fvt9</inInteractionFlows>
+        <inInteractionFlows>Flow_0kdpgqf</inInteractionFlows>
         <actionEvents xmi:type="ifml:ActionEvent" xmi:id="Event_08eve8f">
           <outInteractionFlows>Flow_1x7kytr</outInteractionFlows>
         </actionEvents>
       </interactionFlowModelElements>
       <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_0i33xms" sourceInteractionFlowElement="Event_01mqm3b" targetInteractionFlowElement="Action_14winaq" />
-      <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_0y8fvt9" sourceInteractionFlowElement="Event_0p27for" targetInteractionFlowElement="Action_14winaq" />
       <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_1x7kytr" sourceInteractionFlowElement="Event_08eve8f" targetInteractionFlowElement="ViewContainer_0agb0tb" />
       <interactionFlowModelElements xmi:type="ifml:Action" xmi:id="Action_0pmvcq4" uml:name="Crea Item">
         <inInteractionFlows>Flow_1p4iqz9</inInteractionFlows>
@@ -202,34 +203,22 @@
       <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_1hqscur" sourceInteractionFlowElement="Event_0jw8bl2" targetInteractionFlowElement="Action_01m9qqu" />
       <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_1apxfm4" sourceInteractionFlowElement="Event_054yju7" targetInteractionFlowElement="ViewContainer_0s0yvhx" />
       <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_1iwvwje" sourceInteractionFlowElement="Event_01p0d1m" targetInteractionFlowElement="ViewContainer_0s0yvhx" />
+      <interactionFlowModelElements xmi:type="ifml:Action" xmi:id="Action_1uv51ff" uml:name="Is Logged?">
+        <inInteractionFlows>Flow_17sn8hw</inInteractionFlows>
+        <actionEvents xmi:type="ifml:ActionEvent" xmi:id="Event_0yon0sl" uml:name="No">
+          <outInteractionFlows>Flow_1xf6fvw</outInteractionFlows>
+        </actionEvents>
+        <actionEvents xmi:type="ifml:ActionEvent" xmi:id="Event_18s6d1t" uml:name="Yes">
+          <outInteractionFlows>Flow_0kdpgqf</outInteractionFlows>
+        </actionEvents>
+      </interactionFlowModelElements>
+      <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_17sn8hw" sourceInteractionFlowElement="Event_0p27for" targetInteractionFlowElement="Action_1uv51ff" />
+      <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_1xf6fvw" sourceInteractionFlowElement="Event_0yon0sl" targetInteractionFlowElement="ViewContainer_0gcuwil" />
+      <interactionFlowModelElements xmi:type="ifml:NavigationFlow" xmi:id="Flow_0kdpgqf" sourceInteractionFlowElement="Event_18s6d1t" targetInteractionFlowElement="Action_14winaq" />
     </interactionFlowModel>
   </ifml:IFMLModel>
   <ifmldi:IFMLDiagram modelElement="_myModel">
     <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewContainer_0gcuwil_di" modelElement="ViewContainer_0gcuwil">
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_1wbg9d0_di" modelElement="ViewComponent_1wbg9d0">
-        <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Parameter_0thpz3h_di" modelElement="Parameter_0thpz3h">
-          <bounds xmi:type="dc:Bounds" x="1169" y="5" width="140" height="30" />
-          <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-        </ownedElement>
-        <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Parameter_1fvasey_di" modelElement="Parameter_1fvasey">
-          <bounds xmi:type="dc:Bounds" x="1169" y="45" width="140" height="30" />
-          <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-        </ownedElement>
-        <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_0gup1ub_di" modelElement="Event_1gksvvw">
-          <bounds xmi:type="dc:Bounds" x="1211" y="99" width="20" height="20" />
-          <ownedLabel xmi:type="ifmldi:IFMLLabel">
-            <bounds xmi:type="dc:Bounds" x="1226" y="126" width="36" height="14" />
-          </ownedLabel>
-        </ownedElement>
-        <bounds xmi:type="dc:Bounds" x="1149" y="-35" width="180" height="140" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_0gup1ub_di" modelElement="Event_1gksvvw">
-        <bounds xmi:type="dc:Bounds" x="1211" y="99" width="20" height="20" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel">
-          <bounds xmi:type="dc:Bounds" x="1226" y="126" width="36" height="14" />
-        </ownedLabel>
-      </ownedElement>
       <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_1wbg9d0_di" modelElement="ViewComponent_1wbg9d0">
         <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Parameter_0thpz3h_di" modelElement="Parameter_0thpz3h">
           <bounds xmi:type="dc:Bounds" x="1169" y="5" width="140" height="30" />
@@ -269,16 +258,15 @@
     </ownedElement>
     <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_09pu52c_di" modelElement="Flow_09pu52c" id="Flow_09pu52c_di">
       <waypoint xmi:type="dc:Point" x="1166" y="255" />
-      <waypoint xmi:type="dc:Point" x="925" y="255" />
-      <waypoint xmi:type="dc:Point" x="925" y="94" />
-      <waypoint xmi:type="dc:Point" x="1085" y="94" />
+      <waypoint xmi:type="dc:Point" x="1120" y="255" />
+      <waypoint xmi:type="dc:Point" x="1120" y="125" />
     </ownedElement>
     <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewContainer_1rrsdk2_di" modelElement="ViewContainer_1rrsdk2">
       <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_1hoiu68_di" modelElement="ViewComponent_1hoiu68">
         <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_0p27for_di" modelElement="Event_0p27for">
-          <bounds xmi:type="dc:Bounds" x="1037" y="428" width="20" height="20" />
+          <bounds xmi:type="dc:Bounds" x="1067" y="428" width="20" height="20" />
           <ownedLabel xmi:type="ifmldi:IFMLLabel">
-            <bounds xmi:type="dc:Bounds" x="1035" y="455" width="25" height="14" />
+            <bounds xmi:type="dc:Bounds" x="1065" y="448" width="25" height="14" />
           </ownedLabel>
         </ownedElement>
         <bounds xmi:type="dc:Bounds" x="1080" y="400" width="140" height="75" />
@@ -293,12 +281,6 @@
         </ownedElement>
         <bounds xmi:type="dc:Bounds" x="1080" y="489" width="140" height="75" />
         <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_0p27for_di" modelElement="Event_0p27for">
-        <bounds xmi:type="dc:Bounds" x="1037" y="428" width="20" height="20" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel">
-          <bounds xmi:type="dc:Bounds" x="1035" y="455" width="25" height="14" />
-        </ownedLabel>
       </ownedElement>
       <bounds xmi:type="dc:Bounds" x="1048" y="358" width="246" height="223" />
       <ownedLabel xmi:type="ifmldi:IFMLLabel" />
@@ -323,20 +305,8 @@
             <bounds xmi:type="dc:Bounds" x="1238" y="729" width="36" height="14" />
           </ownedLabel>
         </ownedElement>
-        <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_0099j8p_di" modelElement="Event_0099j8p">
-          <bounds xmi:type="dc:Bounds" x="1215" y="739" width="20" height="20" />
-          <ownedLabel xmi:type="ifmldi:IFMLLabel">
-            <bounds xmi:type="dc:Bounds" x="1238" y="729" width="36" height="14" />
-          </ownedLabel>
-        </ownedElement>
         <bounds xmi:type="dc:Bounds" x="1105" y="752" width="213" height="100" />
         <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_0099j8p_di" modelElement="Event_0099j8p">
-        <bounds xmi:type="dc:Bounds" x="1215" y="739" width="20" height="20" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel">
-          <bounds xmi:type="dc:Bounds" x="1238" y="729" width="36" height="14" />
-        </ownedLabel>
       </ownedElement>
       <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_035uvzz_di" modelElement="ViewComponent_035uvzz">
         <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_16pvi3l_di" modelElement="Event_16pvi3l">
@@ -346,16 +316,6 @@
           </ownedLabel>
         </ownedElement>
         <bounds xmi:type="dc:Bounds" x="895" y="865" width="150" height="80" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_0uw72ve_di" modelElement="ViewComponent_0uw72ve">
-        <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_01mqm3b_di" modelElement="Event_01mqm3b">
-          <bounds xmi:type="dc:Bounds" x="1121" y="930" width="20" height="20" />
-          <ownedLabel xmi:type="ifmldi:IFMLLabel">
-            <bounds xmi:type="dc:Bounds" x="1119" y="957" width="25" height="14" />
-          </ownedLabel>
-        </ownedElement>
-        <bounds xmi:type="dc:Bounds" x="1058" y="865" width="140" height="80" />
         <ownedLabel xmi:type="ifmldi:IFMLLabel" />
       </ownedElement>
       <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_0uw72ve_di" modelElement="ViewComponent_0uw72ve">
@@ -386,16 +346,6 @@
           </ownedLabel>
         </ownedElement>
         <bounds xmi:type="dc:Bounds" x="950" y="762" width="140" height="80" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_0uw72ve_di" modelElement="ViewComponent_0uw72ve">
-        <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_01mqm3b_di" modelElement="Event_01mqm3b">
-          <bounds xmi:type="dc:Bounds" x="1121" y="930" width="20" height="20" />
-          <ownedLabel xmi:type="ifmldi:IFMLLabel">
-            <bounds xmi:type="dc:Bounds" x="1119" y="957" width="25" height="14" />
-          </ownedLabel>
-        </ownedElement>
-        <bounds xmi:type="dc:Bounds" x="1058" y="865" width="140" height="80" />
         <ownedLabel xmi:type="ifmldi:IFMLLabel" />
       </ownedElement>
       <bounds xmi:type="dc:Bounds" x="875" y="723" width="478" height="242" />
@@ -446,31 +396,11 @@
       <waypoint xmi:type="dc:Point" x="494" y="22" />
       <waypoint xmi:type="dc:Point" x="1089" y="22" />
     </ownedElement>
-    <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_0uw72ve_di" modelElement="ViewComponent_0uw72ve">
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_01mqm3b_di" modelElement="Event_01mqm3b">
-        <bounds xmi:type="dc:Bounds" x="1121" y="930" width="20" height="20" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel">
-          <bounds xmi:type="dc:Bounds" x="1119" y="957" width="25" height="14" />
-        </ownedLabel>
-      </ownedElement>
-      <bounds xmi:type="dc:Bounds" x="1058" y="865" width="140" height="80" />
-      <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-    </ownedElement>
     <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_0327guc_di" modelElement="Flow_0327guc" id="Flow_0327guc_di">
       <waypoint xmi:type="dc:Point" x="938" y="792" />
       <waypoint xmi:type="dc:Point" x="856" y="792" />
       <waypoint xmi:type="dc:Point" x="856" y="555" />
       <waypoint xmi:type="dc:Point" x="1045" y="555" />
-    </ownedElement>
-    <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_0uw72ve_di" modelElement="ViewComponent_0uw72ve">
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_01mqm3b_di" modelElement="Event_01mqm3b">
-        <bounds xmi:type="dc:Bounds" x="1121" y="930" width="20" height="20" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel">
-          <bounds xmi:type="dc:Bounds" x="1119" y="957" width="25" height="14" />
-        </ownedLabel>
-      </ownedElement>
-      <bounds xmi:type="dc:Bounds" x="1058" y="865" width="140" height="80" />
-      <ownedLabel xmi:type="ifmldi:IFMLLabel" />
     </ownedElement>
     <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Action_1f44zrd_di" modelElement="Action_1f44zrd">
       <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_1swcgcm_di" modelElement="Event_1swcgcm">
@@ -555,39 +485,7 @@
         <bounds xmi:type="dc:Bounds" x="559" y="523" width="180" height="260" />
         <ownedLabel xmi:type="ifmldi:IFMLLabel" />
       </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_1dhmhfz_di" modelElement="ViewComponent_1dhmhfz">
-        <bounds xmi:type="dc:Bounds" x="559" y="793" width="180" height="80" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_1x0dv5n_di" modelElement="ViewComponent_1x0dv5n">
-        <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_01p0d1m_di" modelElement="Event_01p0d1m">
-          <bounds xmi:type="dc:Bounds" x="624" y="961" width="20" height="20" />
-          <ownedLabel xmi:type="ifmldi:IFMLLabel">
-            <bounds xmi:type="dc:Bounds" x="644" y="977" width="25" height="14" />
-          </ownedLabel>
-        </ownedElement>
-        <bounds xmi:type="dc:Bounds" x="559" y="891" width="180" height="80" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
       <bounds xmi:type="dc:Bounds" x="538" y="241" width="221" height="757" />
-      <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-    </ownedElement>
-    <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_1wbg9d0_di" modelElement="ViewComponent_1wbg9d0">
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Parameter_0thpz3h_di" modelElement="Parameter_0thpz3h">
-        <bounds xmi:type="dc:Bounds" x="1169" y="5" width="140" height="30" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Parameter_1fvasey_di" modelElement="Parameter_1fvasey">
-        <bounds xmi:type="dc:Bounds" x="1169" y="45" width="140" height="30" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-      </ownedElement>
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_0gup1ub_di" modelElement="Event_1gksvvw">
-        <bounds xmi:type="dc:Bounds" x="1211" y="99" width="20" height="20" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel">
-          <bounds xmi:type="dc:Bounds" x="1226" y="126" width="36" height="14" />
-        </ownedLabel>
-      </ownedElement>
-      <bounds xmi:type="dc:Bounds" x="1149" y="-35" width="180" height="140" />
       <ownedLabel xmi:type="ifmldi:IFMLLabel" />
     </ownedElement>
     <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_1b2xk4r_di" modelElement="Flow_1b2xk4r" id="Flow_1b2xk4r_di">
@@ -620,12 +518,6 @@
         <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Parameter_16d4qbg_di" modelElement="Parameter_16d4qbg">
           <bounds xmi:type="dc:Bounds" x="1534" y="403" width="181" height="30" />
           <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-        </ownedElement>
-        <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_1jh2jeo_di" modelElement="Event_1jh2jeo">
-          <bounds xmi:type="dc:Bounds" x="1500" y="367.5" width="20" height="20" />
-          <ownedLabel xmi:type="ifmldi:IFMLLabel">
-            <bounds xmi:type="dc:Bounds" x="1518" y="380" width="36" height="14" />
-          </ownedLabel>
         </ownedElement>
         <bounds xmi:type="dc:Bounds" x="1514" y="363" width="221" height="100" />
         <ownedLabel xmi:type="ifmldi:IFMLLabel" />
@@ -683,10 +575,6 @@
       <waypoint xmi:type="dc:Point" x="827" y="1025" />
       <waypoint xmi:type="dc:Point" x="827" y="468" />
     </ownedElement>
-    <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_0y8fvt9_di" modelElement="Flow_0y8fvt9" id="Flow_0y8fvt9_di">
-      <waypoint xmi:type="dc:Point" x="1037" y="438" />
-      <waypoint xmi:type="dc:Point" x="867" y="438" />
-    </ownedElement>
     <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_1x7kytr_di" modelElement="Flow_1x7kytr" id="Flow_1x7kytr_di">
       <waypoint xmi:type="dc:Point" x="828" y="396" />
       <waypoint xmi:type="dc:Point" x="828" y="317" />
@@ -704,20 +592,6 @@
         <bounds xmi:type="dc:Bounds" x="404" y="644" width="20" height="20" />
       </ownedElement>
       <bounds xmi:type="dc:Bounds" x="374" y="590" width="80" height="60" />
-      <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-    </ownedElement>
-    <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_1x0dv5n_di" modelElement="ViewComponent_1x0dv5n">
-      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_01p0d1m_di" modelElement="Event_01p0d1m">
-        <bounds xmi:type="dc:Bounds" x="624" y="961" width="20" height="20" />
-        <ownedLabel xmi:type="ifmldi:IFMLLabel">
-          <bounds xmi:type="dc:Bounds" x="644" y="977" width="25" height="14" />
-        </ownedLabel>
-      </ownedElement>
-      <bounds xmi:type="dc:Bounds" x="559" y="891" width="180" height="80" />
-      <ownedLabel xmi:type="ifmldi:IFMLLabel" />
-    </ownedElement>
-    <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="ViewComponent_1dhmhfz_di" modelElement="ViewComponent_1dhmhfz">
-      <bounds xmi:type="dc:Bounds" x="559" y="793" width="180" height="80" />
       <ownedLabel xmi:type="ifmldi:IFMLLabel" />
     </ownedElement>
     <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_1p4iqz9_di" modelElement="Flow_1p4iqz9" id="Flow_1p4iqz9_di">
@@ -772,6 +646,37 @@
     <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_1iwvwje_di" modelElement="Flow_1iwvwje" id="Flow_1iwvwje_di">
       <waypoint xmi:type="dc:Point" x="634" y="981" />
       <waypoint xmi:type="dc:Point" x="634" y="1099" />
+    </ownedElement>
+    <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Action_1uv51ff_di" modelElement="Action_1uv51ff">
+      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_0yon0sl_di" modelElement="Event_0yon0sl">
+        <bounds xmi:type="dc:Bounds" x="946" y="396" width="20" height="20" />
+        <ownedLabel xmi:type="ifmldi:IFMLLabel">
+          <bounds xmi:type="dc:Bounds" x="949" y="423" width="15" height="14" />
+        </ownedLabel>
+      </ownedElement>
+      <ownedElement xmi:type="ifmldi:IFMLNode" xmi:id="Event_18s6d1t_di" modelElement="Event_18s6d1t">
+        <bounds xmi:type="dc:Bounds" x="889" y="427" width="20" height="20" />
+        <ownedLabel xmi:type="ifmldi:IFMLLabel">
+          <bounds xmi:type="dc:Bounds" x="890" y="454" width="18" height="14" />
+        </ownedLabel>
+      </ownedElement>
+      <bounds xmi:type="dc:Bounds" x="906" y="408" width="80" height="60" />
+      <ownedLabel xmi:type="ifmldi:IFMLLabel" />
+    </ownedElement>
+    <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_17sn8hw_di" modelElement="Flow_17sn8hw" id="Flow_17sn8hw_di">
+      <waypoint xmi:type="dc:Point" x="1067" y="438" />
+      <waypoint xmi:type="dc:Point" x="986" y="438" />
+    </ownedElement>
+    <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_1xf6fvw_di" modelElement="Flow_1xf6fvw" id="Flow_1xf6fvw_di">
+      <waypoint xmi:type="dc:Point" x="956" y="396" />
+      <waypoint xmi:type="dc:Point" x="956" y="67" />
+      <waypoint xmi:type="dc:Point" x="1085" y="67" />
+    </ownedElement>
+    <ownedElement xmi:type="ifmldi:IFMLConnection" xmi:id="Flow_0kdpgqf_di" modelElement="Flow_0kdpgqf" id="Flow_0kdpgqf_di">
+      <waypoint xmi:type="dc:Point" x="889" y="437" />
+      <waypoint xmi:type="dc:Point" x="878" y="437" />
+      <waypoint xmi:type="dc:Point" x="878" y="438" />
+      <waypoint xmi:type="dc:Point" x="867" y="438" />
     </ownedElement>
   </ifmldi:IFMLDiagram>
 </xmi:XMI>
