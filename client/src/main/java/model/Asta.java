@@ -15,6 +15,8 @@ public class Asta {
         private LocalDateTime date;
         private String formattedDate;
 
+        public Offerta() {}
+        
         public Offerta(String username, int prezzo) {
             this(username, prezzo, LocalDateTime.now());
         }

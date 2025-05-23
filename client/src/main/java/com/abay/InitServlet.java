@@ -1,7 +1,6 @@
 package com.abay;
 
-import utils.DbManager;
-
+import utils.DAO.DbConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,7 +17,7 @@ public class InitServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            DbManager.inizializzaDatabase();
+            DbConnection.inizializzaDatabase();
             response.getWriter().println("Database inizializzato con successo.");
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

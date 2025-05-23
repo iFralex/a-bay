@@ -3,9 +3,9 @@ package com.abay;
 import model.Asta;
 import model.Utente;
 import model.Asta.Offerta;
-import utils.DbManager;
 import utils.LocalDateTimeAdapter;
-
+import utils.DAO.AstaDAO;
+import utils.DAO.OffertaDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -50,7 +50,7 @@ public class OffertaApiServlet extends HttpServlet {
         }
 
         try {
-            Asta asta = DbManager.getAstaById(astaId);
+            Asta asta = AstaDAO.getAstaById(astaId);
             if (asta == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 errors.add("Asta non trovata");
@@ -106,7 +106,7 @@ public class OffertaApiServlet extends HttpServlet {
 
         Asta asta;
         try {
-            asta = DbManager.getAstaById(astaId);
+            asta = AstaDAO.getAstaById(astaId);
             if (asta == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 errors.add("Asta non trovata");
@@ -136,7 +136,7 @@ public class OffertaApiServlet extends HttpServlet {
         try {
             Offerta offerta = new Offerta(username, prezzoOfferto);
             asta.newOfferta(offerta);
-            DbManager.registraOfferta(astaId, offerta);
+            OffertaDAO.registraOfferta(astaId, offerta);
             result.put("success", "Offerta registrata!");
         } catch (IllegalArgumentException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

@@ -12,8 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import model.Utente;
-import utils.DbManager;
 import utils.PasswordUtils;
+import utils.DAO.UtenteDAO;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -32,7 +32,7 @@ public class LoginServlet extends HttpServlet {
         Utente utente = null;
 
         try {
-            utente = DbManager.getUtente(username);
+            utente = UtenteDAO.getUtente(username);
         } catch (IllegalArgumentException e) {
             request.setAttribute("errors", List.of("Errore nel recuperare l'utente: " + e.getMessage()));
             request.getRequestDispatcher("/login.jsp").forward(request, response);

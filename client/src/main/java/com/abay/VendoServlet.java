@@ -4,9 +4,9 @@ import model.Asta;
 import model.Utente;
 import model.Articolo;
 import model.Asta.Offerta;
-import utils.DbManager;
 import utils.LocalDateTimeAdapter;
-
+import utils.DAO.ArticoloDAO;
+import utils.DAO.AstaDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -48,9 +48,9 @@ public class VendoServlet extends HttpServlet {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            List<Articolo> articoliUtente = DbManager.getArticoliDisponibiliPerUtente(utente.getUsername());
-            List<Asta> asteAperte = DbManager.getAsteUtente(utente.getUsername(), false);
-            List<Asta> asteChiuse = DbManager.getAsteUtente(utente.getUsername(), true);
+            List<Articolo> articoliUtente = ArticoloDAO.getArticoliDisponibiliPerUtente(utente.getUsername());
+            List<Asta> asteAperte = AstaDAO.getAsteUtente(utente.getUsername(), false);
+            List<Asta> asteChiuse = AstaDAO.getAsteUtente(utente.getUsername(), true);
 
             result.put("articoliUtente", articoliUtente);
             result.put("asteAperte", asteAperte);
@@ -91,7 +91,7 @@ public class VendoServlet extends HttpServlet {
 
             try (InputStream imageStream = (imagePart != null) ? imagePart.getInputStream() : null) {
                 int prezzo = Integer.parseInt(request.getParameter("prezzo"));
-                DbManager.inserisciArticolo(nome, descrizione, imageStream, prezzo, utente.getUsername());
+                ArticoloDAO.inserisciArticolo(nome, descrizione, imageStream, prezzo, utente.getUsername());
                 response.setStatus(HttpServletResponse.SC_OK);
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -110,7 +110,7 @@ public class VendoServlet extends HttpServlet {
                 for (String idStr : articoliIds) {
                     int id = Integer.parseInt(idStr);
                     idArticoli.add(id);
-                    prezzoIniziale += DbManager.getPrezzoArticolo(id);
+                    prezzoIniziale += ArticoloDAO.getPrezzoArticolo(id);
                 }
 
                 Part imagePart = request.getPart("immagine");
@@ -131,7 +131,7 @@ public class VendoServlet extends HttpServlet {
                 asta.setDescrizione(request.getParameter("descrizione"));
                 asta.setImmagine(encodedImg);
 
-                DbManager.inserisciAsta(asta);
+                AstaDAO.inserisciAsta(asta);
                 response.setStatus(HttpServletResponse.SC_OK);
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

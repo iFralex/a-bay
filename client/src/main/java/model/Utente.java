@@ -7,6 +7,8 @@ public class Utente {
     private String cognome;
     private String indirizzo;
 
+    public Utente() {}
+    
     public Utente(String username, String passwordHash, String nome, String cognome, String indirizzo) {
         setUsername(username);
         setPasswordHash(passwordHash);

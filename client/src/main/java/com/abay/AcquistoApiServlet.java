@@ -3,9 +3,8 @@ package com.abay;
 import model.Asta;
 import model.Asta.Offerta;
 import model.Utente;
-import utils.DbManager;;
-import utils.LocalDateTimeAdapter;;
-
+import utils.LocalDateTimeAdapter;
+import utils.DAO.AstaDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -36,7 +35,7 @@ public class AcquistoApiServlet extends HttpServlet {
         // Recupera aste aperte filtrate per parola chiave
         if (parolaChiave != null && !parolaChiave.trim().isEmpty()) {
             try {
-                asteAperte = DbManager.getAstePerParolaChiave(parolaChiave, now);
+                asteAperte = AstaDAO.getAstePerParolaChiave(parolaChiave, now);
             } catch (IllegalArgumentException e) {
                 errors.add(e.getMessage());
             } catch (SQLException e) {
@@ -56,7 +55,7 @@ public class AcquistoApiServlet extends HttpServlet {
             if (utente != null) {
                 try {
                     try {
-                        asteAggiudicate = DbManager.getAsteVinteDaUtente(utente.getUsername());
+                        asteAggiudicate = AstaDAO.getAsteVinteDaUtente(utente.getUsername());
                     } catch (IllegalArgumentException e) {
                         errors.add(e.getMessage());
                     }
@@ -64,7 +63,7 @@ public class AcquistoApiServlet extends HttpServlet {
                     try {
                         if (asteVisitateIdsStr != null && asteVisitateIdsStr.length() > 0)
                             for (String idStr : asteVisitateIdsStr.split(",")) {
-                                Asta asta = DbManager.getAstaById(Integer.parseInt(idStr));
+                                Asta asta = AstaDAO.getAstaById(Integer.parseInt(idStr));
                                 if (asta != null && !asta.getScadenza().isBefore(now) && !asta.isChiusa())
                                     asteVisitate.add(asta);
                             }

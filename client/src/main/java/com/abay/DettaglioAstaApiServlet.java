@@ -1,11 +1,10 @@
 package com.abay;
 
 import model.Asta;
-import model.Asta.Offerta;
 import model.Utente;
-import utils.DbManager;
 import utils.LocalDateTimeAdapter;
-
+import utils.DAO.AstaDAO;
+import utils.DAO.UtenteDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -52,7 +51,7 @@ public class DettaglioAstaApiServlet extends HttpServlet {
         }
 
         try {
-            Asta asta = DbManager.getAstaById(astaId);
+            Asta asta = AstaDAO.getAstaById(astaId);
             if (asta == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.getWriter().write("{\"error\":\"Asta non trovata\"}");
@@ -70,7 +69,7 @@ public class DettaglioAstaApiServlet extends HttpServlet {
 
             if (asta.getOffertaVincitrice() != null) {
                 try {
-                    Utente vincitore = DbManager.getUtente(asta.getOffertaVincitrice().getUsername());
+                    Utente vincitore = UtenteDAO.getUtente(asta.getOffertaVincitrice().getUsername());
                     result.put("vincitore", vincitore);
                 } catch (IllegalArgumentException e) {
                     result.put("warning", e.getMessage());
@@ -118,17 +117,17 @@ public class DettaglioAstaApiServlet extends HttpServlet {
         }
 
         try {
-            DbManager.chiudiAsta(astaId, aggiudicatario);
+            AstaDAO.chiudiAsta(astaId, aggiudicatario);
 
             // Ricarica l'asta aggiornata
-            Asta asta = DbManager.getAstaById(astaId);
+            Asta asta = AstaDAO.getAstaById(astaId);
             Map<String, Object> result = new HashMap<>();
             result.put("success", "Asta chiusa con successo");
             result.put("asta", asta);
 
             if (asta.getOffertaVincitrice() != null) {
                 try {
-                    Utente vincitore = DbManager.getUtente(asta.getOffertaVincitrice().getUsername());
+                    Utente vincitore = UtenteDAO.getUtente(asta.getOffertaVincitrice().getUsername());
                     result.put("vincitore", vincitore);
                 } catch (IllegalArgumentException e) {
                     result.put("warning", e.getMessage());
