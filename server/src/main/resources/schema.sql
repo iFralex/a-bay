@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS articolo (
     immagine blob,
     prezzo INTEGER NOT NULL CHECK (prezzo > 0 AND prezzo < 500000),
     venditore VARCHAR(100) NOT NULL,
-    FOREIGN KEY (venditore) REFERENCES utente(username),
+    FOREIGN KEY (venditore) REFERENCES utente(username) ON DELETE RESTRICT ON UPDATE CASCADE,
     CHECK(length(nome) >= 3)
 );
 
@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS asta (
     rialzo_minimo INTEGER NOT NULL CHECK (rialzo_minimo > 0 AND rialzo_minimo < 100000),
     venditore VARCHAR(100) NOT NULL,
     aggiudicatario VARCHAR(100),
-    FOREIGN KEY (venditore) REFERENCES utente(username),
-    FOREIGN KEY (aggiudicatario) REFERENCES utente(username) ON DELETE SET NULL,
+    FOREIGN KEY (venditore) REFERENCES utente(username) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (aggiudicatario) REFERENCES utente(username) ON UPDATE CASCADE ON DELETE SET NULL,
     CHECK(length(nome) >= 4),
     CHECK(length(scadenza) >= 4)
 );
@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS asta_articoli (
     id_asta INTEGER NOT NULL,
     id_articolo INTEGER NOT NULL,
     PRIMARY KEY (id_asta, id_articolo),
-    FOREIGN KEY (id_asta) REFERENCES asta(id),
-    FOREIGN KEY (id_articolo) REFERENCES articolo(id)
+    FOREIGN KEY (id_asta) REFERENCES asta(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_articolo) REFERENCES articolo(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS offerta (
